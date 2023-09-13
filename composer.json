@@ -1,0 +1,25 @@
+{
+    "name": "nevadskiy/laravel-morphed-by-any",
+    "description": "The missing Eloquent relationship.",
+    "keywords": [
+        "morphed-by-any",
+        "many-to-any",
+        "relations",
+        "laravel",
+        "eloquent"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Nevadskiy\\MorphAny\\": "src/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
