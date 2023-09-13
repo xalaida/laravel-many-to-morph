@@ -9,14 +9,14 @@ trait HasMorphedByAny
 		return $this->newMorphAny();
 	}
 
-	protected function newMorphAny(): MorphAny
+	protected function newMorphAny($foreignPivotKey = null, $parentKey = null): MorphAny
 	{
 		return new MorphAny(
 			query: $this->newQuery(),
 			parent: $this,
 			pivotTable: 'page_sections',
-			foreignPivotKey: $foreignPivotKey ?: $this->getForeignKey(),
-			parentKey: $parentKey ?: $this->getKeyName(),
+			foreignPivotKey: $foreignPivotKey ?? $this->getForeignKey(),
+			parentKey: $parentKey ?? $this->getKeyName(),
 			morphTypeKey: 'page_section_type',
 			morphForeignKey: 'page_section_id',
 		);

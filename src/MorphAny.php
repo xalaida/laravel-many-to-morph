@@ -98,7 +98,7 @@ class MorphAny extends Relation
 	{
 		// @todo use no join, just plain pivot query...
 
-		// $this->performJoin();
+		$this->performJoin();
 
 		if (static::$constraints) {
 			$this->addWhereConstraints();
@@ -172,28 +172,9 @@ class MorphAny extends Relation
 	 */
 	public function getResults()
 	{
-		// @todo probably use pivot model query here...
-		$pivotResults = $this->query->get();
-
-		// @todo no need to build this dictionary...
-		$this->buildDictionary($pivotResults);
-
-		$morphsDictionary = $this->getMorphResults();
-
-		$models = [];
-
-		foreach ($pivotResults as $pivotResult) {
-			// find record
-			$morphTypeKey = $this->getDictionaryKey($pivotResult->{$this->morphTypeKey});
-			$foreignKeyKey = $this->getDictionaryKey($pivotResult->{$this->morphForeignKey});
-			$model = $morphsDictionary[$morphTypeKey][$foreignKeyKey]; // @todo handle missing model...
-
-			$this->hydratePivotModel($model, $pivotResult);
-
-			$models[] = $model;
-		}
-
-		return new Collection($models);
+		return ! is_null($this->parent->{$this->parentKey})
+			? $this->get()
+			: $this->related->newCollection(); // @todo create collection manually......
 	}
 
 	/**
@@ -288,5 +269,34 @@ class MorphAny extends Relation
 		$model->setRelation($this->accessor, $this->parent->newPivot(
 			$this->parent, $pivotResult->getAttributes(), $this->pivotTable, true, $this->using
 		));
+	}
+
+	/**
+	 * @todo use columns dictionary with morph types: [FaqSection::class => ['id', 'heading'], HeroSection::class => ['id', ['heading']]
+	 */
+	public function get($columns = ['*']): Collection
+	{
+		// @todo probably use pivot model query here...
+		$pivotResults = $this->query->get();
+
+		// @todo no need to build this dictionary...
+		$this->buildDictionary($pivotResults);
+
+		$morphsDictionary = $this->getMorphResults();
+
+		$models = [];
+
+		foreach ($pivotResults as $pivotResult) {
+			// find record
+			$morphTypeKey = $this->getDictionaryKey($pivotResult->{$this->morphTypeKey});
+			$foreignKeyKey = $this->getDictionaryKey($pivotResult->{$this->morphForeignKey});
+			$model = $morphsDictionary[$morphTypeKey][$foreignKeyKey]; // @todo handle missing model...
+
+			$this->hydratePivotModel($model, $pivotResult);
+
+			$models[] = $model;
+		}
+
+		return new Collection($models);
 	}
 }
