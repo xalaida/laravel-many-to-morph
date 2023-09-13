@@ -7,8 +7,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\Concerns\InteractsWithDictionary;
-use Illuminate\Database\Eloquent\Relations\Concerns\InteractsWithPivotTable;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\MorphPivot;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
 /**
@@ -21,12 +20,12 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 class MorphAny extends Relation
 {
 	use InteractsWithDictionary;
-	use InteractsWithPivotTable;
+	use GetResults;
 
 	/**
 	 * @example "page_sections"
 	 */
-	protected $pivotTable;
+	protected $table;
 
 	/**
 	 * @example page_sections.page_id
@@ -72,23 +71,35 @@ class MorphAny extends Relation
 	public function __construct(
 		Builder $query,
 		Model   $parent,
-				$pivotTable,
+		string  $table,
 				$foreignPivotKey,
 				$parentKey,
 				$morphTypeKey,
 				$morphForeignKey,
 	)
 	{
-		$this->pivotTable = $pivotTable;
+		$this->table = $table;
 		$this->foreignPivotKey = $foreignPivotKey;
 		$this->parentKey = $parentKey;
 
 		$this->morphTypeKey = $morphTypeKey;
 		$this->morphForeignKey = $morphForeignKey;
 
-		// @todo start new pivot query here...
+		parent::__construct($this->asPivotQuery($query), $parent);
+	}
 
-		parent::__construct($query, $parent);
+	/**
+	 * Use a pivot model's query as the relation query.
+	 */
+	protected function asPivotQuery(Builder $query): Builder
+	{
+		$pivot = new MorphPivot();
+
+		$pivot->setConnection($query->getConnection()->getName());
+
+		$pivot->setTable($this->table);
+
+		return $pivot->newQuery();
 	}
 
 	/**
@@ -96,30 +107,9 @@ class MorphAny extends Relation
 	 */
 	public function addConstraints(): void
 	{
-		// @todo use no join, just plain pivot query...
-
-		$this->performJoin();
-
 		if (static::$constraints) {
 			$this->addWhereConstraints();
 		}
-	}
-
-	protected function performJoin($query = null): static
-	{
-		$query = $query ?: $this->query;
-
-		// We need to join to the intermediate table on the related model's primary
-		// key column with the intermediate table's foreign key for the related
-		// model instance. Then we can set the "where" for the parent models.
-		$query->join(
-			$this->pivotTable,
-			$this->getQualifiedParentKeyName(),
-			'=',
-			$this->getQualifiedForeignPivotKeyName()
-		);
-
-		return $this;
 	}
 
 	/**
@@ -149,7 +139,7 @@ class MorphAny extends Relation
 	{
 		return str_contains($column, '.')
 			? $column
-			: $this->pivotTable . '.' . $column;
+			: $this->table . '.' . $column;
 	}
 
 	public function addEagerConstraints(array $models)
@@ -168,143 +158,10 @@ class MorphAny extends Relation
 	}
 
 	/**
-	 * @see BelongsToMany::get
-	 */
-	public function getResults(): Collection
-	{
-		return ! is_null($this->parent->{$this->parentKey})
-			? $this->get()
-			: $this->newCollection();
-	}
-
-	/**
-	 * @see MorphTo::buildDictionary
-	 */
-	protected function buildDictionary(Collection $pivotResults): void
-	{
-		foreach ($pivotResults as $pivotResult) {
-			if ($pivotResult->{$this->morphTypeKey}) {
-				$morphTypeKey = $this->getDictionaryKey($pivotResult->{$this->morphTypeKey});
-				$foreignKeyKey = $this->getDictionaryKey($pivotResult->{$this->morphForeignKey});
-
-				$this->dictionary[$morphTypeKey][$foreignKeyKey][] = $pivotResult;
-			}
-		}
-	}
-
-	/**
-	 * @see MorphTo::getEager
-	 */
-	protected function getMorphResults(): array
-	{
-		$morphs = [];
-
-		foreach (array_keys($this->dictionary) as $type) {
-			$morphs[$type] = $this->getResultsByType($type)->getDictionary();
-		}
-
-		return $morphs;
-	}
-
-	/**
-	 * @see MorphTo::getResultsByType
-	 */
-	protected function getResultsByType($type)
-	{
-		/** @var Model $instance */
-		$instance = $this->createModelByType($type);
-
-		$ownerKey = $this->ownerKey ?? $instance->getKeyName();
-
-		$query = $instance->newQuery()
-			// ->mergeConstraintsFrom($this->getQuery())
-			// @todo add hook to modify relation.
-			->with(array_merge(
-				$this->getQuery()->getEagerLoads(),
-				(array)($this->morphableEagerLoads[get_class($instance)] ?? [])
-			))
-			->withCount(
-				(array)($this->morphableEagerLoadCounts[get_class($instance)] ?? [])
-			);
-
-		if ($callback = ($this->morphableConstraints[get_class($instance)] ?? null)) {
-			$callback($query);
-		}
-
-		$whereIn = $this->whereInMethod($instance, $ownerKey);
-
-		return $query->{$whereIn}(
-			$instance->getTable() . '.' . $ownerKey, $this->gatherKeysByType($type, $instance->getKeyType())
-		)->get();
-	}
-
-	/**
-	 * @see MorphTo::createModelByType
-	 */
-	public function createModelByType($type)
-	{
-		$class = Model::getActualClassNameForMorph($type);
-
-		return tap(new $class, function ($instance) {
-			if (!$instance->getConnectionName()) {
-				$instance->setConnection($this->getConnection()->getName());
-			}
-		});
-	}
-
-	/**
-	 * @see MorphTo::createModelByType
-	 */
-	protected function gatherKeysByType($type, $keyType): array
-	{
-		return $keyType !== 'string'
-			? array_keys($this->dictionary[$type])
-			: array_map(function ($modelId) {
-				return (string)$modelId;
-			}, array_filter(array_keys($this->dictionary[$type])));
-	}
-
-	protected function hydratePivotModel($model, $pivotResult)
-	{
-		$model->setRelation($this->accessor, $this->parent->newPivot(
-			$this->parent, $pivotResult->getAttributes(), $this->pivotTable, true, $this->using
-		));
-	}
-
-	/**
 	 * @todo use columns dictionary with morph types: [FaqSection::class => ['id', 'heading'], HeroSection::class => ['id', ['heading']]
 	 */
-	public function get($columns = ['*']): Collection
+	public function get($columns = ['*'])
 	{
-		// @todo probably use pivot model query here...
-		$pivotResults = $this->query->get();
-
-		// @todo no need to build this dictionary...
-		$this->buildDictionary($pivotResults);
-
-		$morphsDictionary = $this->getMorphResults();
-
-		$models = [];
-
-		foreach ($pivotResults as $pivotResult) {
-			// find record
-			$morphTypeKey = $this->getDictionaryKey($pivotResult->{$this->morphTypeKey});
-			$foreignKeyKey = $this->getDictionaryKey($pivotResult->{$this->morphForeignKey});
-			$model = $morphsDictionary[$morphTypeKey][$foreignKeyKey]; // @todo handle missing model...
-
-			$this->hydratePivotModel($model, $pivotResult);
-
-			$models[] = $model;
-		}
-
-		return $this->newCollection($models);
-	}
-
-	/**
-	 * @todo ability to configure collection class.
-	 */
-	protected function newCollection(array $models = []): Collection
-	{
-		return new Collection($models);
+		return $this->getResults();
 	}
 }

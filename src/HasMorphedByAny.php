@@ -2,6 +2,11 @@
 
 namespace Nevadskiy\MorphAny;
 
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * @mixin Model
+ */
 trait HasMorphedByAny
 {
 	protected function morphedByAny(): MorphAny
@@ -14,7 +19,7 @@ trait HasMorphedByAny
 		return new MorphAny(
 			query: $this->newQuery(),
 			parent: $this,
-			pivotTable: 'page_sections',
+			table: 'page_sections',
 			foreignPivotKey: $foreignPivotKey ?? $this->getForeignKey(),
 			parentKey: $parentKey ?? $this->getKeyName(),
 			morphTypeKey: 'page_section_type',
