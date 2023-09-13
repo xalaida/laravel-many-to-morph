@@ -81,7 +81,6 @@ class MorphAny extends Relation
 		$this->table = $table;
 		$this->foreignPivotKey = $foreignPivotKey;
 		$this->parentKey = $parentKey;
-
 		$this->morphTypeKey = $morphTypeKey;
 		$this->morphForeignKey = $morphForeignKey;
 
@@ -115,19 +114,17 @@ class MorphAny extends Relation
 	/**
 	 * @see BelongsToMany::addWhereConstraints
 	 */
-	protected function addWhereConstraints()
+	protected function addWhereConstraints(): void
 	{
-		$this->query->where(
-			$this->getQualifiedForeignPivotKeyName(), '=', $this->parent->{$this->parentKey}
-		);
-
-		return $this;
+		$this->query->where([
+			$this->getQualifiedForeignPivotKeyName() => $this->parent->getAttribute($this->parentKey)
+		]);
 	}
 
 	/**
 	 * @see BelongsToMany::getQualifiedForeignPivotKeyName
 	 */
-	public function getQualifiedForeignPivotKeyName()
+	public function getQualifiedForeignPivotKeyName(): string
 	{
 		return $this->qualifyPivotColumn($this->foreignPivotKey);
 	}
@@ -135,11 +132,11 @@ class MorphAny extends Relation
 	/**
 	 * @see BelongsToMany::qualifyPivotColumn
 	 */
-	public function qualifyPivotColumn($column)
+	public function qualifyPivotColumn($column): string
 	{
 		return str_contains($column, '.')
 			? $column
-			: $this->table . '.' . $column;
+			: "{$this->table}.{$column}";
 	}
 
 	public function addEagerConstraints(array $models)
@@ -160,7 +157,7 @@ class MorphAny extends Relation
 	/**
 	 * @todo use columns dictionary with morph types: [FaqSection::class => ['id', 'heading'], HeroSection::class => ['id', ['heading']]
 	 */
-	public function get($columns = ['*'])
+	public function get($columns = ['*']): Collection
 	{
 		return $this->getResults();
 	}
