@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Schema;
 use Nevadskiy\MorphAny\HasMorphedByAny;
 use Nevadskiy\MorphAny\MorphAny;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
 
 class MorphAnyTest extends TestCase
 {
