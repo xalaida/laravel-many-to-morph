@@ -170,11 +170,11 @@ class MorphAny extends Relation
 	/**
 	 * @see BelongsToMany::get
 	 */
-	public function getResults()
+	public function getResults(): Collection
 	{
 		return ! is_null($this->parent->{$this->parentKey})
 			? $this->get()
-			: $this->related->newCollection(); // @todo create collection manually......
+			: $this->newCollection();
 	}
 
 	/**
@@ -297,6 +297,14 @@ class MorphAny extends Relation
 			$models[] = $model;
 		}
 
+		return $this->newCollection($models);
+	}
+
+	/**
+	 * @todo ability to configure collection class.
+	 */
+	protected function newCollection(array $models = []): Collection
+	{
 		return new Collection($models);
 	}
 }
