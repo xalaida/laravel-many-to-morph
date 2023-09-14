@@ -16,30 +16,10 @@ class MorphAny extends Relation
 	use InteractsWithDictionary;
 
 	protected $pivotTable;
-
-	/**
-	 * @example page_sections.page_id
-	 *
-	 * @todo rename to "pivotForeignKey"
-	 */
-	protected $pivotForeignKey;
-
-	/**
-	 * @example pages.id
-	 *
-	 * @todo rename to "parentKey".
-	 */
-	protected $parentKey;
-
-	/**
-	 * @example page_sections.page_section_type
-	 */
-	protected $pivotMorphTypeKey;
-
-	/**
-	 * @example page_sections.page_section_id
-	 */
-	protected $pivotMorphForeignKey;
+	protected $pivotForeignKeyColumn;
+	protected $pivotMorphTypeColumn;
+	protected $pivotMorphForeignKeyColumn;
+	protected $parentKeyColumn;
 
 	protected $dictionary = [];
 
@@ -62,17 +42,17 @@ class MorphAny extends Relation
 		Builder $query,
 		Model   $parent,
 		string  $pivotTable,
-		string  $pivotForeignKey,
-		string  $pivotMorphTypeKey,
-		string  $pivotMorphForeignKey,
-		string  $parentKey,
+		string  $pivotForeignKeyColumn,
+		string  $pivotMorphTypeColumn,
+		string  $pivotMorphForeignKeyColumn,
+		string  $parentKeyColumn,
 	)
 	{
 		$this->pivotTable = $pivotTable;
-		$this->pivotForeignKey = $pivotForeignKey;
-		$this->pivotMorphTypeKey = $pivotMorphTypeKey;
-		$this->pivotMorphForeignKey = $pivotMorphForeignKey;
-		$this->parentKey = $parentKey;
+		$this->pivotForeignKeyColumn = $pivotForeignKeyColumn;
+		$this->pivotMorphTypeColumn = $pivotMorphTypeColumn;
+		$this->pivotMorphForeignKeyColumn = $pivotMorphForeignKeyColumn;
+		$this->parentKeyColumn = $parentKeyColumn;
 
 		parent::__construct($this->buildPivotQuery($query), $parent);
 	}
@@ -107,7 +87,7 @@ class MorphAny extends Relation
 	protected function addWhereConstraints(): void
 	{
 		$this->query->where([
-			$this->getQualifiedForeignPivotKeyName() => $this->parent->getAttribute($this->parentKey)
+			$this->getQualifiedForeignPivotKeyName() => $this->parent->getAttribute($this->parentKeyColumn)
 		]);
 	}
 
@@ -116,7 +96,7 @@ class MorphAny extends Relation
 	 */
 	public function getQualifiedForeignPivotKeyName(): string
 	{
-		return $this->qualifyPivotColumn($this->pivotForeignKey);
+		return $this->qualifyPivotColumn($this->pivotForeignKeyColumn);
 	}
 
 	/**

@@ -15,7 +15,7 @@ trait GetResults
 	 */
 	public function getResults(): Collection
 	{
-		if ($this->parent->getAttribute($this->parentKey) === null) {
+		if ($this->parent->getAttribute($this->parentKeyColumn) === null) {
 			return $this->newCollection();
 		}
 
@@ -29,8 +29,8 @@ trait GetResults
 		$models = [];
 
 		foreach ($pivotModels as $pivotResult) {
-			$morphTypeKey = $this->getDictionaryKey($pivotResult->{$this->pivotMorphTypeKey});
-			$foreignKeyKey = $this->getDictionaryKey($pivotResult->{$this->pivotMorphForeignKey});
+			$morphTypeKey = $this->getDictionaryKey($pivotResult->getAttribute($this->pivotMorphTypeColumn));
+			$foreignKeyKey = $this->getDictionaryKey($pivotResult->getAttribute($this->pivotMorphForeignKeyColumn));
 			$model = $morphsDictionary[$morphTypeKey][$foreignKeyKey]; // @todo handle missing model...
 
 			$this->hydratePivotModel($model, $pivotResult);
@@ -61,9 +61,9 @@ trait GetResults
 	protected function buildDictionary(Collection $pivotModels): void
 	{
 		foreach ($pivotModels as $pivotResult) {
-			if ($pivotResult->getAttribute($this->pivotMorphTypeKey)) {
-				$morphTypeKey = $this->getDictionaryKey($pivotResult->{$this->pivotMorphTypeKey});
-				$foreignKeyKey = $this->getDictionaryKey($pivotResult->{$this->pivotMorphForeignKey});
+			if ($pivotResult->getAttribute($this->pivotMorphTypeColumn)) {
+				$morphTypeKey = $this->getDictionaryKey($pivotResult->getAttribute($this->pivotMorphTypeColumn));
+				$foreignKeyKey = $this->getDictionaryKey($pivotResult->getAttribute($this->pivotMorphForeignKeyColumn));
 
 				$this->dictionary[$morphTypeKey][$foreignKeyKey][] = $pivotResult;
 			}
