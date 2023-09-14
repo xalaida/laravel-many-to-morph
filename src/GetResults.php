@@ -24,7 +24,7 @@ trait GetResults
 		// @todo no need to build this dictionary...
 		$this->buildDictionary($pivotModels);
 
-		$morphsDictionary = $this->getMorphResults();
+		$morphsDictionary = $this->getMorphDictionaries();
 
 		$models = [];
 
@@ -44,15 +44,15 @@ trait GetResults
 	/**
 	 * @see MorphTo::getEager
 	 */
-	protected function getMorphResults(): array
+	protected function getMorphDictionaries(): array
 	{
-		$morphs = [];
+		$dictionaries = [];
 
 		foreach (array_keys($this->dictionary) as $type) {
-			$morphs[$type] = $this->getResultsByType($type)->getDictionary();
+			$dictionaries[$type] = $this->getResultsByType($type)->getDictionary();
 		}
 
-		return $morphs;
+		return $dictionaries;
 	}
 
 	/**
