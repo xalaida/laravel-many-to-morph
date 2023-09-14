@@ -3,27 +3,51 @@
 namespace Nevadskiy\MorphAny;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 /**
  * @mixin Model
  */
 trait HasMorphedByAny
 {
-	protected function morphedByAny(): MorphAny
+	protected function morphedByAny(
+		string $morphName,
+		string $pivotTable = null,
+		string $pivotMorphTypeName = null,
+		string $pivotMorphForeignKeyName = null,
+		string $pivotForeignKeyName = null,
+		string $parentKeyName = null,
+	): MorphAny
 	{
-		return $this->newMorphAny();
+		$pivotTable = $pivotTable ?? Str::plural($morphName);
+
+		$pivotMorphTypeName = $pivotMorphTypeName ?? "{$morphName}_type";
+
+		$pivotMorphForeignKeyName = $pivotMorphForeignKeyName ?? "{$morphName}_id";
+
+		$pivotForeignKeyName = $pivotForeignKeyName ?? $this->getForeignKey();
+
+		$parentKeyName = $parentKeyName ?? $this->getKeyName();
+
+		return $this->newMorphAny($pivotTable, $pivotMorphTypeName, $pivotMorphForeignKeyName, $pivotForeignKeyName, $parentKeyName);
 	}
 
-	protected function newMorphAny(): MorphAny
+	protected function newMorphAny(
+		string $pivotTable,
+		string $pivotMorphTypeName,
+		string $pivotMorphForeignKeyName,
+		string $pivotForeignKeyName,
+		string $parentKeyName
+	): MorphAny
 	{
 		return new MorphAny(
 			query: $this->newQuery(),
 			parent: $this,
-			pivotTable: 'page_sections',
-			pivotForeignKeyColumn: $this->getForeignKey(),
-			pivotMorphTypeColumn: 'page_section_type',
-			pivotMorphForeignKeyColumn: 'page_section_id',
-			parentKeyColumn: $this->getKeyName(),
+			pivotTable: $pivotTable,
+			pivotForeignKeyName: $pivotForeignKeyName,
+			pivotMorphTypeName: $pivotMorphTypeName,
+			pivotMorphForeignKeyName: $pivotMorphForeignKeyName,
+			parentKeyName: $parentKeyName,
 		);
 	}
 }

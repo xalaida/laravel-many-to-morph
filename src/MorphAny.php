@@ -16,10 +16,10 @@ class MorphAny extends Relation
 	use InteractsWithDictionary;
 
 	protected $pivotTable;
-	protected $pivotForeignKeyColumn;
-	protected $pivotMorphTypeColumn;
-	protected $pivotMorphForeignKeyColumn;
-	protected $parentKeyColumn;
+	protected $pivotForeignKeyName;
+	protected $pivotMorphTypeName;
+	protected $pivotMorphForeignKeyName;
+	protected $parentKeyName;
 
 	/**
 	 * @see BelongsToMany::$accessor
@@ -40,17 +40,17 @@ class MorphAny extends Relation
 		Builder $query,
 		Model   $parent,
 		string  $pivotTable,
-		string  $pivotForeignKeyColumn,
-		string  $pivotMorphTypeColumn,
-		string  $pivotMorphForeignKeyColumn,
-		string  $parentKeyColumn,
+		string  $pivotForeignKeyName,
+		string  $pivotMorphTypeName,
+		string  $pivotMorphForeignKeyName,
+		string  $parentKeyName,
 	)
 	{
 		$this->pivotTable = $pivotTable;
-		$this->pivotForeignKeyColumn = $pivotForeignKeyColumn;
-		$this->pivotMorphTypeColumn = $pivotMorphTypeColumn;
-		$this->pivotMorphForeignKeyColumn = $pivotMorphForeignKeyColumn;
-		$this->parentKeyColumn = $parentKeyColumn;
+		$this->pivotForeignKeyName = $pivotForeignKeyName;
+		$this->pivotMorphTypeName = $pivotMorphTypeName;
+		$this->pivotMorphForeignKeyName = $pivotMorphForeignKeyName;
+		$this->parentKeyName = $parentKeyName;
 
 		parent::__construct($this->buildPivotQuery($query), $parent);
 	}
@@ -85,7 +85,7 @@ class MorphAny extends Relation
 	protected function addWhereConstraints(): void
 	{
 		$this->query->where([
-			$this->getQualifiedForeignPivotKeyName() => $this->parent->getAttribute($this->parentKeyColumn)
+			$this->getQualifiedForeignPivotKeyName() => $this->parent->getAttribute($this->parentKeyName)
 		]);
 	}
 
@@ -94,7 +94,7 @@ class MorphAny extends Relation
 	 */
 	public function getQualifiedForeignPivotKeyName(): string
 	{
-		return $this->qualifyPivotColumn($this->pivotForeignKeyColumn);
+		return $this->qualifyPivotColumn($this->pivotForeignKeyName);
 	}
 
 	/**

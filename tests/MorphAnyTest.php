@@ -113,7 +113,7 @@ class Page extends Model
 
     public function sections(): MorphAny
     {
-        return $this->morphedByAny();
+        return $this->morphedByAny('page_section');
     }
 
     public function heroSections(): MorphToMany
