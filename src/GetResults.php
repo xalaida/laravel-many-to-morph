@@ -19,16 +19,16 @@ trait GetResults
 			return $this->newCollection();
 		}
 
-		$pivotResults = $this->query->get();
+		$pivotModels = $this->query->get();
 
 		// @todo no need to build this dictionary...
-		$this->buildDictionary($pivotResults);
+		$this->buildDictionary($pivotModels);
 
 		$morphsDictionary = $this->getMorphResults();
 
 		$models = [];
 
-		foreach ($pivotResults as $pivotResult) {
+		foreach ($pivotModels as $pivotResult) {
 			$morphTypeKey = $this->getDictionaryKey($pivotResult->{$this->pivotMorphTypeKey});
 			$foreignKeyKey = $this->getDictionaryKey($pivotResult->{$this->pivotMorphForeignKey});
 			$model = $morphsDictionary[$morphTypeKey][$foreignKeyKey]; // @todo handle missing model...
@@ -58,10 +58,10 @@ trait GetResults
 	/**
 	 * @see MorphTo::buildDictionary
 	 */
-	protected function buildDictionary(Collection $pivotResults): void
+	protected function buildDictionary(Collection $pivotModels): void
 	{
-		foreach ($pivotResults as $pivotResult) {
-			if ($pivotResult->{$this->pivotMorphTypeKey}) {
+		foreach ($pivotModels as $pivotResult) {
+			if ($pivotResult->getAttribute($this->pivotMorphTypeKey)) {
 				$morphTypeKey = $this->getDictionaryKey($pivotResult->{$this->pivotMorphTypeKey});
 				$foreignKeyKey = $this->getDictionaryKey($pivotResult->{$this->pivotMorphForeignKey});
 
@@ -105,26 +105,26 @@ trait GetResults
 	/**
 	 * @see MorphTo::createModelByType
 	 */
-	public function createModelByType($type)
+	public function createModelByType(string $type)
 	{
 		$class = Model::getActualClassNameForMorph($type);
 
 		return tap(new $class, function ($instance) {
-			if (!$instance->getConnectionName()) {
+			if (! $instance->getConnectionName()) {
 				$instance->setConnection($this->getConnection()->getName());
 			}
 		});
 	}
 
 	/**
-	 * @see MorphTo::createModelByType
+	 * @see MorphTo::gatherKeysByType
 	 */
 	protected function gatherKeysByType($type, $keyType): array
 	{
 		return $keyType !== 'string'
 			? array_keys($this->dictionary[$type])
 			: array_map(function ($modelId) {
-				return (string)$modelId;
+				return (string) $modelId;
 			}, array_filter(array_keys($this->dictionary[$type])));
 	}
 
