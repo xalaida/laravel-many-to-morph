@@ -21,8 +21,6 @@ class MorphAny extends Relation
 	protected $pivotMorphForeignKeyColumn;
 	protected $parentKeyColumn;
 
-	protected $dictionary = [];
-
 	/**
 	 * @see BelongsToMany::$accessor
 	 */
