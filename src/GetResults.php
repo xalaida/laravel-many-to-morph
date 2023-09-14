@@ -26,19 +26,19 @@ trait GetResults
 
 		$morphDictionaries = $this->getMorphDictionaries();
 
-		$models = [];
+		$results = [];
 
-		foreach ($pivotModels as $pivotResult) {
-			$morphTypeKey = $this->getDictionaryKey($pivotResult->getAttribute($this->pivotMorphTypeColumn));
-			$foreignKeyKey = $this->getDictionaryKey($pivotResult->getAttribute($this->pivotMorphForeignKeyColumn));
+		foreach ($pivotModels as $pivotModel) {
+			$morphTypeKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphTypeColumn));
+			$foreignKeyKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphForeignKeyColumn));
 			$model = $morphDictionaries[$morphTypeKey][$foreignKeyKey]; // @todo handle missing model...
 
-			$this->hydratePivotModel($model, $pivotResult);
+			$this->hydratePivotModel($model, $pivotModel);
 
-			$models[] = $model;
+			$results[] = $model;
 		}
 
-		return $this->newCollection($models);
+		return $this->newCollection($results);
 	}
 
 	/**
@@ -60,12 +60,12 @@ trait GetResults
 	 */
 	protected function buildDictionary(Collection $pivotModels): void
 	{
-		foreach ($pivotModels as $pivotResult) {
-			if ($pivotResult->getAttribute($this->pivotMorphTypeColumn)) {
-				$morphTypeKey = $this->getDictionaryKey($pivotResult->getAttribute($this->pivotMorphTypeColumn));
-				$foreignKeyKey = $this->getDictionaryKey($pivotResult->getAttribute($this->pivotMorphForeignKeyColumn));
+		foreach ($pivotModels as $pivotModel) {
+			if ($pivotModel->getAttribute($this->pivotMorphTypeColumn)) {
+				$morphTypeKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphTypeColumn));
+				$foreignKeyKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphForeignKeyColumn));
 
-				$this->dictionary[$morphTypeKey][$foreignKeyKey][] = $pivotResult;
+				$this->dictionary[$morphTypeKey][$foreignKeyKey][] = $pivotModel;
 			}
 		}
 	}
@@ -128,10 +128,10 @@ trait GetResults
 			}, array_filter(array_keys($this->dictionary[$type])));
 	}
 
-	protected function hydratePivotModel($model, $pivotResult)
+	protected function hydratePivotModel($model, $pivotModel)
 	{
 		$model->setRelation($this->accessor, $this->parent->newPivot(
-			$this->parent, $pivotResult->getAttributes(), $this->pivotTable, true, $this->using
+			$this->parent, $pivotModel->getAttributes(), $this->pivotTable, true, $this->using
 		));
 	}
 
