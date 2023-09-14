@@ -47,13 +47,13 @@ trait GetResults
 
 		foreach ($pivotModels as $pivotModel) {
 			$morphType = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphTypeName));
-			$morphKeys = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphForeignKeyName));
+			$morphKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphForeignKeyName));
 
-			if (! $morphType || ! $morphKeys) {
+			if (! $morphType || ! $morphKey) {
 				continue;
 			}
 
-			$keysByMorphType[$morphType][$morphKeys] = true;
+			$keysByMorphType[$morphType][$morphKey] = true;
 		}
 
 		foreach ($keysByMorphType as $morphType => $morphKeys) {
@@ -100,9 +100,9 @@ trait GetResults
 	protected function getResultForPivot(MorphPivot $pivotModel): mixed
 	{
 		$morphType = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphTypeName));
-		$morphKeys = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphForeignKeyName));
+		$morphKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphForeignKeyName));
 
-		$result = $this->morphDictionaries[$morphType][$morphKeys]; // @todo handle missing model...
+		$result = $this->morphDictionaries[$morphType][$morphKey]; // @todo handle missing model...
 
 		$result->setRelation($this->accessor, $pivotModel);
 
