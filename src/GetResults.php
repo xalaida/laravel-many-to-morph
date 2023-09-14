@@ -70,7 +70,6 @@ trait GetResults
 		}
 	}
 
-
 	/**
 	 * @see MorphTo::getResultsByType
 	 */
