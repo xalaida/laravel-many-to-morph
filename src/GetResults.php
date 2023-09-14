@@ -41,20 +41,19 @@ trait GetResults
 		}
 	}
 
-	/**
-	 * @see MorphTo::buildDictionary
-	 */
 	protected function gatherKeysByMorphType(Collection $pivotModels): array
 	{
 		$keysByMorphType = [];
 
 		foreach ($pivotModels as $pivotModel) {
-			if ($pivotModel->getAttribute($this->pivotMorphTypeName)) {
-				$morphTypeKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphTypeName));
-				$morphForeignKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphForeignKeyName));
+			$morphType = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphTypeName));
+			$morphKeys = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphForeignKeyName));
 
-				$keysByMorphType[$morphTypeKey][$morphForeignKey] = true;
+			if (! $morphType || ! $morphKeys) {
+				continue;
 			}
+
+			$keysByMorphType[$morphType][$morphKeys] = true;
 		}
 
 		foreach ($keysByMorphType as $morphType => $morphKeys) {
@@ -73,17 +72,15 @@ trait GetResults
 	 */
 	protected function getResultsByMorphType(string $morphType, array $morphKeys): Collection
 	{
-		/** @var Model $instance */
 		$instance = $this->createModelByMorphType($morphType);
 
-		// @todo rename relation props to have also keyName suffix.
 		$keyName = $instance->getKeyName();
 
-		$whereIn = $this->whereInMethod($instance, $keyName);
-
-		return $instance->newQuery()->{$whereIn}(
-			$instance->qualifyColumn($keyName), $morphKeys
-		)->get();
+		return $instance->newQuery()
+			->{$this->whereInMethod($instance, $keyName)}(
+				$instance->qualifyColumn($keyName), $morphKeys
+			)
+			->get();
 	}
 
 	/**
@@ -91,20 +88,25 @@ trait GetResults
 	 */
 	public function createModelByMorphType(string $morphType)
 	{
-		$modelClass = Model::getActualClassNameForMorph($morphType);
+		$class = Model::getActualClassNameForMorph($morphType);
 
-		return tap(new $modelClass, function ($instance) {
+		return tap(new $class, function ($instance) {
 			if (! $instance->getConnectionName()) {
 				$instance->setConnection($this->getConnection()->getName());
 			}
 		});
 	}
 
-	protected function hydratePivotModel($model, $pivotModel)
+	protected function getResultForPivot(MorphPivot $pivotModel): mixed
 	{
-		$model->setRelation($this->accessor, $this->parent->newPivot(
-			$this->parent, $pivotModel->getAttributes(), $this->pivotTable, true, $this->using
-		));
+		$morphType = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphTypeName));
+		$morphKeys = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphForeignKeyName));
+
+		$result = $this->morphDictionaries[$morphType][$morphKeys]; // @todo handle missing model...
+
+		$result->setRelation($this->accessor, $pivotModel);
+
+		return $result;
 	}
 
 	/**
@@ -113,18 +115,5 @@ trait GetResults
 	protected function newCollection(array $models = []): Collection
 	{
 		return new Collection($models);
-	}
-
-	protected function getResultForPivot(MorphPivot $pivotModel): mixed
-	{
-		$morphType = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphTypeName));
-		$morphForeignKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphForeignKeyName));
-
-		$result = $this->morphDictionaries[$morphType][$morphForeignKey]; // @todo handle missing model...
-
-		// @todo hydrate pivot at the beginning of the method
-		$this->hydratePivotModel($result, $pivotModel);
-
-		return $result;
 	}
 }
