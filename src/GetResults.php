@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\MorphPivot;
  */
 trait GetResults
 {
-	protected $morphDictionaries = [];
+	protected array $morphDictionaries = [];
 
 	public function getResults(): Collection
 	{
@@ -19,15 +19,9 @@ trait GetResults
 			return $this->newCollection();
 		}
 
-		// * Query pivot table.
-		// * Collect all morph type and keys from pivot (use single loop).
-		// * For each morph type, generate a query that
-		// * Generate separate queries for each morph type using whereIn method.
-		// * Find morph model for each pivot and put to result.
-
 		$pivotModels = $this->query->get();
 
-		$this->buildDictionary($pivotModels);
+		$this->buildMorphDictionaries($pivotModels);
 
 		$results = [];
 
@@ -38,7 +32,7 @@ trait GetResults
 		return $this->newCollection($results);
 	}
 
-	protected function buildDictionary(Collection $pivotModels): void
+	protected function buildMorphDictionaries(Collection $pivotModels): void
 	{
 		$keysByMorphType = $this->gatherKeysByMorphType($pivotModels);
 
