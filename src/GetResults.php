@@ -19,6 +19,7 @@ trait GetResults
 			return $this->newCollection();
 		}
 
+		// @todo hydrate pivot model here...
 		$pivotModels = $this->query->get();
 
 		$keysByMorphType = $this->gatherKeysByMorphType($pivotModels);
@@ -35,11 +36,12 @@ trait GetResults
 			$morphType = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphTypeColumn));
 			$morphForeignKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphForeignKeyColumn));
 
-			$model = $morphDictionaries[$morphType][$morphForeignKey]; // @todo handle missing model...
+			$result = $morphDictionaries[$morphType][$morphForeignKey]; // @todo handle missing model...
 
-			$this->hydratePivotModel($model, $pivotModel);
+			// @todo hydrate pivot at the beginning of the method
+			$this->hydratePivotModel($result, $pivotModel);
 
-			$results[] = $model;
+			$results[] = $result;
 		}
 
 		return $this->newCollection($results);
@@ -52,6 +54,7 @@ trait GetResults
 	{
 		$morphKeys = [];
 
+		// @todo hydrate keys to Pivot model... Pivot::setMorphs() to not build dictionary key again later.
 		foreach ($pivotModels as $pivotModel) {
 			if ($pivotModel->getAttribute($this->pivotMorphTypeColumn)) {
 				$morphTypeKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphTypeColumn));
