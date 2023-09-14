@@ -58,8 +58,27 @@ class MorphAnyTest extends TestCase
         Model::unguard();
     }
 
-    #[Test]
-    public function it_returns_morphed_by_many_records(): void
+	#[Test]
+	public function it_creates_morphed_by_any_records(): void
+	{
+		/** @var Page $page */
+		$page = Page::create();
+
+		$heroSection = HeroSection::create([
+			'heading' => 'Hero Section'
+		]);
+
+		$page->sections()->attach($heroSection);
+
+		$this->assertDatabaseHas('page_sections', [
+			'page_id' => $page->id,
+			'page_section_id' => $heroSection->id,
+			'page_section_type' => $heroSection->getMorphClass(),
+		]);
+	}
+
+	#[Test]
+    public function it_returns_morphed_by_any_records(): void
     {
         /** @var Page $page */
         $page = Page::create();

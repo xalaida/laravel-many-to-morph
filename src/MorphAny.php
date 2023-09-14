@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 class MorphAny extends Relation
 {
 	use GetResults;
+	use Attach;
 	use InteractsWithDictionary;
 
 	protected $pivotTable;
