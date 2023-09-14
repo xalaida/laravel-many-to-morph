@@ -24,14 +24,14 @@ trait GetResults
 		// @todo no need to build this dictionary...
 		$this->buildDictionary($pivotModels);
 
-		$morphsDictionary = $this->getMorphDictionaries();
+		$morphDictionaries = $this->getMorphDictionaries();
 
 		$models = [];
 
 		foreach ($pivotModels as $pivotResult) {
 			$morphTypeKey = $this->getDictionaryKey($pivotResult->getAttribute($this->pivotMorphTypeColumn));
 			$foreignKeyKey = $this->getDictionaryKey($pivotResult->getAttribute($this->pivotMorphForeignKeyColumn));
-			$model = $morphsDictionary[$morphTypeKey][$foreignKeyKey]; // @todo handle missing model...
+			$model = $morphDictionaries[$morphTypeKey][$foreignKeyKey]; // @todo handle missing model...
 
 			$this->hydratePivotModel($model, $pivotResult);
 
