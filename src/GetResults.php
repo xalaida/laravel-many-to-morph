@@ -4,6 +4,7 @@ namespace Nevadskiy\MorphAny;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphPivot;
 
 /**
  * @mixin MorphAny
@@ -19,8 +20,11 @@ trait GetResults
 			return $this->newCollection();
 		}
 
-		// @todo hydrate pivot model here...
+
+		/** @var Collection<MorphPivot> $pivotModels */
 		$pivotModels = $this->query->get();
+
+		// @todo hydrate pivot model here...
 
 		$keysByMorphType = $this->gatherKeysByMorphType($pivotModels);
 
