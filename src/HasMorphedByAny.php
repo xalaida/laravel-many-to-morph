@@ -2,9 +2,7 @@
 
 namespace Nevadskiy\MorphAny;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphPivot;
 
 /**
  * @mixin Model
@@ -16,16 +14,16 @@ trait HasMorphedByAny
 		return $this->newMorphAny();
 	}
 
-	protected function newMorphAny($foreignPivotKey = null, $parentKey = null): MorphAny
+	protected function newMorphAny($pivotForeignKey = null, $parentKey = null): MorphAny
 	{
 		return new MorphAny(
 			query: $this->newQuery(),
 			parent: $this,
-			table: 'page_sections',
-			foreignPivotKey: $foreignPivotKey ?? $this->getForeignKey(),
+			pivotTable: 'page_sections',
+			pivotForeignKey: $pivotForeignKey ?? $this->getForeignKey(),
+			pivotMorphTypeKey: 'page_section_type',
+			pivotMorphForeignKey: 'page_section_id',
 			parentKey: $parentKey ?? $this->getKeyName(),
-			morphTypeKey: 'page_section_type',
-			morphForeignKey: 'page_section_id',
 		);
 	}
 }

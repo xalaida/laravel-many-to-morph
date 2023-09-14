@@ -10,29 +10,19 @@ use Illuminate\Database\Eloquent\Relations\Concerns\InteractsWithDictionary;
 use Illuminate\Database\Eloquent\Relations\MorphPivot;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
-/**
- * 1st query: join pivot.
- * Next in loop query for each pivot morph type.
- *
- * SELECT * FROM pages
- * JOIN page_sections ON pages.id = page_sections.page_id
- */
 class MorphAny extends Relation
 {
-	use InteractsWithDictionary;
 	use GetResults;
+	use InteractsWithDictionary;
 
-	/**
-	 * @example "page_sections"
-	 */
-	protected $table;
+	protected $pivotTable;
 
 	/**
 	 * @example page_sections.page_id
 	 *
-	 * @todo rename to "foreignPivotKey"
+	 * @todo rename to "pivotForeignKey"
 	 */
-	protected $foreignPivotKey;
+	protected $pivotForeignKey;
 
 	/**
 	 * @example pages.id
@@ -44,12 +34,12 @@ class MorphAny extends Relation
 	/**
 	 * @example page_sections.page_section_type
 	 */
-	protected $morphTypeKey;
+	protected $pivotMorphTypeKey;
 
 	/**
 	 * @example page_sections.page_section_id
 	 */
-	protected $morphForeignKey;
+	protected $pivotMorphForeignKey;
 
 	protected $dictionary = [];
 
@@ -71,32 +61,32 @@ class MorphAny extends Relation
 	public function __construct(
 		Builder $query,
 		Model   $parent,
-		string  $table,
-				$foreignPivotKey,
-				$parentKey,
-				$morphTypeKey,
-				$morphForeignKey,
+		string  $pivotTable,
+		string  $pivotForeignKey,
+		string  $pivotMorphTypeKey,
+		string  $pivotMorphForeignKey,
+		string  $parentKey,
 	)
 	{
-		$this->table = $table;
-		$this->foreignPivotKey = $foreignPivotKey;
+		$this->pivotTable = $pivotTable;
+		$this->pivotForeignKey = $pivotForeignKey;
+		$this->pivotMorphTypeKey = $pivotMorphTypeKey;
+		$this->pivotMorphForeignKey = $pivotMorphForeignKey;
 		$this->parentKey = $parentKey;
-		$this->morphTypeKey = $morphTypeKey;
-		$this->morphForeignKey = $morphForeignKey;
 
-		parent::__construct($this->asPivotQuery($query), $parent);
+		parent::__construct($this->buildPivotQuery($query), $parent);
 	}
 
 	/**
-	 * Use a pivot model's query as the relation query.
+	 * Get a new pivot model's query.
 	 */
-	protected function asPivotQuery(Builder $query): Builder
+	protected function buildPivotQuery(Builder $query): Builder
 	{
 		$pivot = new MorphPivot();
 
 		$pivot->setConnection($query->getConnection()->getName());
 
-		$pivot->setTable($this->table);
+		$pivot->setTable($this->pivotTable);
 
 		return $pivot->newQuery();
 	}
@@ -126,7 +116,7 @@ class MorphAny extends Relation
 	 */
 	public function getQualifiedForeignPivotKeyName(): string
 	{
-		return $this->qualifyPivotColumn($this->foreignPivotKey);
+		return $this->qualifyPivotColumn($this->pivotForeignKey);
 	}
 
 	/**
@@ -136,7 +126,7 @@ class MorphAny extends Relation
 	{
 		return str_contains($column, '.')
 			? $column
-			: "{$this->table}.{$column}";
+			: "{$this->pivotTable}.{$column}";
 	}
 
 	public function addEagerConstraints(array $models)

@@ -29,9 +29,8 @@ trait GetResults
 		$models = [];
 
 		foreach ($pivotResults as $pivotResult) {
-			// find record
-			$morphTypeKey = $this->getDictionaryKey($pivotResult->{$this->morphTypeKey});
-			$foreignKeyKey = $this->getDictionaryKey($pivotResult->{$this->morphForeignKey});
+			$morphTypeKey = $this->getDictionaryKey($pivotResult->{$this->pivotMorphTypeKey});
+			$foreignKeyKey = $this->getDictionaryKey($pivotResult->{$this->pivotMorphForeignKey});
 			$model = $morphsDictionary[$morphTypeKey][$foreignKeyKey]; // @todo handle missing model...
 
 			$this->hydratePivotModel($model, $pivotResult);
@@ -62,9 +61,9 @@ trait GetResults
 	protected function buildDictionary(Collection $pivotResults): void
 	{
 		foreach ($pivotResults as $pivotResult) {
-			if ($pivotResult->{$this->morphTypeKey}) {
-				$morphTypeKey = $this->getDictionaryKey($pivotResult->{$this->morphTypeKey});
-				$foreignKeyKey = $this->getDictionaryKey($pivotResult->{$this->morphForeignKey});
+			if ($pivotResult->{$this->pivotMorphTypeKey}) {
+				$morphTypeKey = $this->getDictionaryKey($pivotResult->{$this->pivotMorphTypeKey});
+				$foreignKeyKey = $this->getDictionaryKey($pivotResult->{$this->pivotMorphForeignKey});
 
 				$this->dictionary[$morphTypeKey][$foreignKeyKey][] = $pivotResult;
 			}
@@ -133,7 +132,7 @@ trait GetResults
 	protected function hydratePivotModel($model, $pivotResult)
 	{
 		$model->setRelation($this->accessor, $this->parent->newPivot(
-			$this->parent, $pivotResult->getAttributes(), $this->table, true, $this->using
+			$this->parent, $pivotResult->getAttributes(), $this->pivotTable, true, $this->using
 		));
 	}
 
