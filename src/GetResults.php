@@ -21,7 +21,7 @@ trait GetResults
 
 		$pivotModels = $this->query->get();
 
-		// @todo no need to build this dictionary...
+		// @todo no need to build this dictionary, just group by morph type...
 		$this->buildDictionary($pivotModels);
 
 		$morphDictionaries = $this->getMorphDictionaries();
@@ -63,9 +63,9 @@ trait GetResults
 		foreach ($pivotModels as $pivotModel) {
 			if ($pivotModel->getAttribute($this->pivotMorphTypeColumn)) {
 				$morphTypeKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphTypeColumn));
-				$foreignKeyKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphForeignKeyColumn));
+				$morphForeignKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphForeignKeyColumn));
 
-				$this->dictionary[$morphTypeKey][$foreignKeyKey][] = $pivotModel;
+				$this->dictionary[$morphTypeKey][$morphForeignKey][] = $pivotModel;
 			}
 		}
 	}
