@@ -84,21 +84,7 @@ class MorphAny extends Relation
 		$this->morphTypeKey = $morphTypeKey;
 		$this->morphForeignKey = $morphForeignKey;
 
-		parent::__construct($this->asPivotQuery($query), $parent);
-	}
-
-	/**
-	 * Use a pivot model's query as the relation query.
-	 */
-	protected function asPivotQuery(Builder $query): Builder
-	{
-		$pivot = new MorphPivot();
-
-		$pivot->setConnection($query->getConnection()->getName());
-
-		$pivot->setTable($this->table);
-
-		return $pivot->newQuery();
+		parent::__construct($query, $parent);
 	}
 
 	/**
@@ -132,7 +118,7 @@ class MorphAny extends Relation
 	/**
 	 * @see BelongsToMany::qualifyPivotColumn
 	 */
-	public function qualifyPivotColumn($column): string
+	public function qualifyPivotColumn(string $column): string
 	{
 		return str_contains($column, '.')
 			? $column
