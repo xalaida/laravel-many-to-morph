@@ -21,17 +21,21 @@ trait GetResults
 
 		$pivotModels = $this->query->get();
 
-		// @todo no need to build this dictionary, just group by morph type...
-		$this->buildDictionary($pivotModels);
+		$keysByMorphType = $this->gatherKeysByMorphType($pivotModels);
 
-		$morphDictionaries = $this->getMorphDictionaries();
+		$morphDictionaries = [];
+
+		foreach ($keysByMorphType as $morphType => $morphKeys) {
+			$morphDictionaries[$morphType] = $this->getResultsByMorphType($morphType, array_keys($morphKeys))->getDictionary();
+		}
 
 		$results = [];
 
 		foreach ($pivotModels as $pivotModel) {
-			$morphTypeKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphTypeColumn));
-			$foreignKeyKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphForeignKeyColumn));
-			$model = $morphDictionaries[$morphTypeKey][$foreignKeyKey]; // @todo handle missing model...
+			$morphType = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphTypeColumn));
+			$morphForeignKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphForeignKeyColumn));
+
+			$model = $morphDictionaries[$morphType][$morphForeignKey]; // @todo handle missing model...
 
 			$this->hydratePivotModel($model, $pivotModel);
 
@@ -42,90 +46,58 @@ trait GetResults
 	}
 
 	/**
-	 * @see MorphTo::getEager
-	 */
-	protected function getMorphDictionaries(): array
-	{
-		$dictionaries = [];
-
-		foreach (array_keys($this->dictionary) as $type) {
-			$dictionaries[$type] = $this->getResultsByType($type)->getDictionary();
-		}
-
-		return $dictionaries;
-	}
-
-	/**
 	 * @see MorphTo::buildDictionary
 	 */
-	protected function buildDictionary(Collection $pivotModels): void
+	protected function gatherKeysByMorphType(Collection $pivotModels): array
 	{
+		$morphKeys = [];
+
 		foreach ($pivotModels as $pivotModel) {
 			if ($pivotModel->getAttribute($this->pivotMorphTypeColumn)) {
 				$morphTypeKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphTypeColumn));
 				$morphForeignKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphForeignKeyColumn));
 
-				$this->dictionary[$morphTypeKey][$morphForeignKey][] = $pivotModel;
+				$morphKeys[$morphTypeKey][$morphForeignKey] = true;
 			}
 		}
+
+		return $morphKeys;
 	}
 
 	/**
 	 * @see MorphTo::getResultsByType
+	 *
+	 * @todo constraints
+	 * @todo eager loads
+	 * @todo eager load counts
 	 */
-	protected function getResultsByType($type)
+	protected function getResultsByMorphType(string $morphType, array $morphKeys): Collection
 	{
 		/** @var Model $instance */
-		$instance = $this->createModelByType($type);
+		$instance = $this->createModelByMorphType($morphType);
 
-		$ownerKey = $this->ownerKey ?? $instance->getKeyName();
+		// @todo rename relation props to have also keyName suffix.
+		$keyName = $instance->getKeyName();
 
-		$query = $instance->newQuery()
-			// ->mergeConstraintsFrom($this->getQuery())
-			// @todo add hook to modify relation.
-			->with(array_merge(
-				$this->getQuery()->getEagerLoads(),
-				(array)($this->morphableEagerLoads[get_class($instance)] ?? [])
-			))
-			->withCount(
-				(array)($this->morphableEagerLoadCounts[get_class($instance)] ?? [])
-			);
+		$whereIn = $this->whereInMethod($instance, $keyName);
 
-		if ($callback = ($this->morphableConstraints[get_class($instance)] ?? null)) {
-			$callback($query);
-		}
-
-		$whereIn = $this->whereInMethod($instance, $ownerKey);
-
-		return $query->{$whereIn}(
-			$instance->getTable() . '.' . $ownerKey, $this->gatherKeysByType($type, $instance->getKeyType())
+		return $instance->newQuery()->{$whereIn}(
+			$instance->qualifyColumn($keyName), $morphKeys
 		)->get();
 	}
 
 	/**
 	 * @see MorphTo::createModelByType
 	 */
-	public function createModelByType(string $type)
+	public function createModelByMorphType(string $morphType)
 	{
-		$class = Model::getActualClassNameForMorph($type);
+		$modelClass = Model::getActualClassNameForMorph($morphType);
 
-		return tap(new $class, function ($instance) {
+		return tap(new $modelClass, function ($instance) {
 			if (! $instance->getConnectionName()) {
 				$instance->setConnection($this->getConnection()->getName());
 			}
 		});
-	}
-
-	/**
-	 * @see MorphTo::gatherKeysByType
-	 */
-	protected function gatherKeysByType($type, $keyType): array
-	{
-		return $keyType !== 'string'
-			? array_keys($this->dictionary[$type])
-			: array_map(function ($modelId) {
-				return (string) $modelId;
-			}, array_filter(array_keys($this->dictionary[$type])));
 	}
 
 	protected function hydratePivotModel($model, $pivotModel)
