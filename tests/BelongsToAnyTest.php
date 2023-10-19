@@ -26,12 +26,11 @@ class BelongsToAnyTest extends TestCase
         });
 
         // Pivot table
-        Schema::create('page_sections', function (Blueprint $table) {
+        Schema::create('page_components', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('page_id')->index()->constrained('pages');
-            $table->morphs('page_section');
+            $table->foreignId('page_id')->constrained('pages');
+            $table->morphs('page_component');
             $table->integer('position')->unsigned()->default(0);
-            $table->timestamps();
         });
 
         // Related table #1
@@ -59,7 +58,7 @@ class BelongsToAnyTest extends TestCase
     }
 
 	#[Test]
-	public function it_creates_morphed_by_any_records(): void
+	public function it_attaches_belongs_to_any_models(): void
 	{
 		/** @var Page $page */
 		$page = Page::create();
@@ -68,45 +67,45 @@ class BelongsToAnyTest extends TestCase
 			'heading' => 'Hero Section'
 		]);
 
-		$page->sections()->attach($heroSection);
+		$page->components()->attach($heroSection);
 
-		$this->assertDatabaseHas('page_sections', [
+		$this->assertDatabaseHas('page_components', [
 			'page_id' => $page->id,
-			'page_section_id' => $heroSection->id,
-			'page_section_type' => $heroSection->getMorphClass(),
+			'page_component_id' => $heroSection->id,
+			'page_component_type' => $heroSection->getMorphClass(),
 		]);
 	}
 
 	#[Test]
-    public function it_returns_morphed_by_any_records(): void
+    public function it_gets_belongs_to_any_models(): void
     {
         /** @var Page $page */
         $page = Page::create();
 
-        $page->heroSections()->attach(
+        $page->components()->attach(
             $heroSection = HeroSection::create([
                 'heading' => 'Hero Section'
             ])
         );
 
-        $page->demoSections()->attach(
+        $page->components()->attach(
             $demoSection = DemoSection::create([
                 'heading' => 'Demo Section'
             ])
         );
 
-        $page->faqSections()->attach(
+        $page->components()->attach(
             $faqSection = FaqSection::create([
                 'heading' => 'FAQ Section'
             ])
         );
 
-        $sections = $page->sections()->get();
+        $components = $page->components()->get();
 
-        static::assertCount(3, $sections);
-        static::assertTrue($sections[0]->is($heroSection));
-        static::assertTrue($sections[1]->is($demoSection));
-        static::assertTrue($sections[2]->is($faqSection));
+        static::assertCount(3, $components);
+        static::assertTrue($components[0]->is($heroSection));
+        static::assertTrue($components[1]->is($demoSection));
+        static::assertTrue($components[2]->is($faqSection));
     }
 
     protected function tearDown(): void
@@ -115,7 +114,7 @@ class BelongsToAnyTest extends TestCase
         Schema::drop('pages');
 
         // Pivot table
-        Schema::drop('page_sections');
+        Schema::drop('page_components');
 
         // Related tables
         Schema::drop('hero_sections');
@@ -130,24 +129,9 @@ class Page extends Model
 {
     use HasBelongsToAny;
 
-    public function sections(): BelongsToAny
+    public function components(): BelongsToAny
     {
-        return $this->morphedByAny('page_section');
-    }
-
-    public function heroSections(): MorphToMany
-    {
-        return $this->morphedByMany(HeroSection::class, 'page_section');
-    }
-
-    public function demoSections(): MorphToMany
-    {
-        return $this->morphedByMany(DemoSection::class, 'page_section');
-    }
-
-    public function faqSections(): MorphToMany
-    {
-        return $this->morphedByMany(FaqSection::class, 'page_section');
+        return $this->belongsToAny('page_component');
     }
 }
 
