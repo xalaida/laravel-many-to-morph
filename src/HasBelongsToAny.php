@@ -29,10 +29,10 @@ trait HasBelongsToAny
 
 		$parentKeyName = $parentKeyName ?? $this->getKeyName();
 
-		return $this->newMorphAny($pivotTable, $pivotMorphTypeName, $pivotMorphKeyName, $pivotForeignKeyName, $parentKeyName);
+		return $this->newBelongsToAny($pivotTable, $pivotMorphTypeName, $pivotMorphKeyName, $pivotForeignKeyName, $parentKeyName);
 	}
 
-	protected function newMorphAny(
+	protected function newBelongsToAny(
 		string $pivotTable,
 		string $pivotMorphTypeName,
 		string $pivotMorphKeyName,
