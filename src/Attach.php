@@ -17,7 +17,7 @@ trait Attach
 		$this->getQuery()->insert([
 			$this->pivotForeignKeyName => $this->getParent()->getAttribute($this->parentKeyName),
 			$this->pivotMorphTypeName => $model->getMorphClass(),
-			$this->pivotMorphForeignKeyName => $model->getKey(),
+			$this->pivotMorphKeyName => $model->getKey(),
 		]);
 	}
 }

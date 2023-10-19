@@ -19,7 +19,7 @@ class BelongsToAny extends Relation
 	protected $pivotTable;
 	protected $pivotForeignKeyName;
 	protected $pivotMorphTypeName;
-	protected $pivotMorphForeignKeyName;
+	protected $pivotMorphKeyName;
 	protected $parentKeyName;
 
 	/**
@@ -43,14 +43,14 @@ class BelongsToAny extends Relation
 		string  $pivotTable,
 		string  $pivotForeignKeyName,
 		string  $pivotMorphTypeName,
-		string  $pivotMorphForeignKeyName,
+		string  $pivotMorphKeyName,
 		string  $parentKeyName,
 	)
 	{
 		$this->pivotTable = $pivotTable;
 		$this->pivotForeignKeyName = $pivotForeignKeyName;
 		$this->pivotMorphTypeName = $pivotMorphTypeName;
-		$this->pivotMorphForeignKeyName = $pivotMorphForeignKeyName;
+		$this->pivotMorphKeyName = $pivotMorphKeyName;
 		$this->parentKeyName = $parentKeyName;
 
 		parent::__construct($this->buildPivotQuery($query), $parent);

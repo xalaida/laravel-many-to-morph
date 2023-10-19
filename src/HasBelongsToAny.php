@@ -10,7 +10,7 @@ trait HasBelongsToAny
 		string $morphName,
 		string $pivotTable = null,
 		string $pivotMorphTypeName = null,
-		string $pivotMorphForeignKeyName = null,
+		string $pivotMorphKeyName = null,
 		string $pivotForeignKeyName = null,
 		string $parentKeyName = null,
 	): BelongsToAny
@@ -19,19 +19,19 @@ trait HasBelongsToAny
 
 		$pivotMorphTypeName = $pivotMorphTypeName ?? "{$morphName}_type";
 
-		$pivotMorphForeignKeyName = $pivotMorphForeignKeyName ?? "{$morphName}_id";
+		$pivotMorphKeyName = $pivotMorphKeyName ?? "{$morphName}_id";
 
 		$pivotForeignKeyName = $pivotForeignKeyName ?? $this->getForeignKey();
 
 		$parentKeyName = $parentKeyName ?? $this->getKeyName();
 
-		return $this->newMorphAny($pivotTable, $pivotMorphTypeName, $pivotMorphForeignKeyName, $pivotForeignKeyName, $parentKeyName);
+		return $this->newMorphAny($pivotTable, $pivotMorphTypeName, $pivotMorphKeyName, $pivotForeignKeyName, $parentKeyName);
 	}
 
 	protected function newMorphAny(
 		string $pivotTable,
 		string $pivotMorphTypeName,
-		string $pivotMorphForeignKeyName,
+		string $pivotMorphKeyName,
 		string $pivotForeignKeyName,
 		string $parentKeyName
 	): BelongsToAny
@@ -42,7 +42,7 @@ trait HasBelongsToAny
 			pivotTable: $pivotTable,
 			pivotForeignKeyName: $pivotForeignKeyName,
 			pivotMorphTypeName: $pivotMorphTypeName,
-			pivotMorphForeignKeyName: $pivotMorphForeignKeyName,
+			pivotMorphKeyName: $pivotMorphKeyName,
 			parentKeyName: $parentKeyName,
 		);
 	}
