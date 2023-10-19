@@ -28,16 +28,8 @@ class BelongsToAny extends Relation
 	 */
 	protected $accessor = 'pivot';
 
-	/**
-	 * The class name of the custom pivot model to use for the relationship.
-	 *
-	 * @var string
-	 */
 	protected $using;
 
-	/**
-	 * Make a new relation instance.
-	 */
 	public function __construct(
 		Builder $query,
 		Model   $parent,
@@ -57,9 +49,6 @@ class BelongsToAny extends Relation
 		parent::__construct($this->buildPivotQuery($query), $parent);
 	}
 
-	/**
-	 * Get a new pivot model's query.
-	 */
 	protected function buildPivotQuery(Builder $query): Builder
 	{
 		$pivot = new MorphPivot();
