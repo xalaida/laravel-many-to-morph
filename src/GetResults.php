@@ -11,8 +11,6 @@ use Illuminate\Database\Eloquent\Relations\MorphPivot;
  */
 trait GetResults
 {
-	protected array $morphDictionaries = [];
-
 	public function getResults(): Collection
 	{
 		if ($this->parent->getAttribute($this->parentKeyName) === null) {
@@ -21,43 +19,36 @@ trait GetResults
 
 		$pivotModels = $this->query->get();
 
-		$this->buildMorphDictionaries($pivotModels);
+		$keysByMorphType = $this->getKeysByMorphType($pivotModels);
 
-		$results = [];
+		$modelsByMorphType = [];
+
+		foreach ($keysByMorphType as $morphType => $keys) {
+			$modelsByMorphType[$morphType] = $this->getModelsByMorphType($morphType, $keys)->getDictionary();
+		}
+
+		$models = [];
 
 		foreach ($pivotModels as $pivotModel) {
-			$results[] = $this->getResultForPivot($pivotModel);
+			$models[] = $this->getModelForPivot($pivotModel, $modelsByMorphType);
 		}
 
-		return $this->newCollection($results);
+		return $this->newCollection($models);
 	}
 
-	protected function buildMorphDictionaries(Collection $pivotModels): void
-	{
-		$keysByMorphType = $this->gatherKeysByMorphType($pivotModels);
-
-		foreach ($keysByMorphType as $morphType => $morphKeys) {
-			$this->morphDictionaries[$morphType] = $this->getResultsByMorphType($morphType, $morphKeys)->getDictionary();
-		}
-	}
-
-	protected function gatherKeysByMorphType(Collection $pivotModels): array
+	protected function getKeysByMorphType(Collection $pivotModels): array
 	{
 		$keysByMorphType = [];
 
 		foreach ($pivotModels as $pivotModel) {
 			$morphType = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphTypeName));
-			$morphKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphForeignKeyName));
+			$morphKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphKeyName));
 
 			if (! $morphType || ! $morphKey) {
 				continue;
 			}
 
 			$keysByMorphType[$morphType][$morphKey] = true;
-		}
-
-		foreach ($keysByMorphType as $morphType => $morphKeys) {
-			$keysByMorphType[$morphType] = array_unique($morphKeys);
 		}
 
 		return $keysByMorphType;
@@ -70,15 +61,15 @@ trait GetResults
 	 * @todo eager loads
 	 * @todo eager load counts
 	 */
-	protected function getResultsByMorphType(string $morphType, array $morphKeys): Collection
+	protected function getModelsByMorphType(string $morphType, array $keys): Collection
 	{
-		$instance = $this->createModelByMorphType($morphType);
+		$instance = $this->newModelByMorphType($morphType);
 
 		$keyName = $instance->getKeyName();
 
 		return $instance->newQuery()
 			->{$this->whereInMethod($instance, $keyName)}(
-				$instance->qualifyColumn($keyName), $morphKeys
+				$instance->qualifyColumn($keyName), $keys
 			)
 			->get();
 	}
@@ -86,7 +77,7 @@ trait GetResults
 	/**
 	 * @see MorphTo::createModelByType
 	 */
-	public function createModelByMorphType(string $morphType)
+	public function newModelByMorphType(string $morphType)
 	{
 		$class = Model::getActualClassNameForMorph($morphType);
 
@@ -97,16 +88,16 @@ trait GetResults
 		});
 	}
 
-	protected function getResultForPivot(MorphPivot $pivotModel): mixed
+	protected function getModelForPivot(MorphPivot $pivotModel, array $modelsByMorphType): Model
 	{
 		$morphType = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphTypeName));
-		$morphKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphForeignKeyName));
+		$morphKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphKeyName));
 
-		$result = $this->morphDictionaries[$morphType][$morphKey]; // @todo handle missing model...
+		$model = $modelsByMorphType[$morphType][$morphKey]; // @todo handle missing model...
 
-		$result->setRelation($this->accessor, $pivotModel);
+		$model->setRelation($this->accessor, $pivotModel);
 
-		return $result;
+		return $model;
 	}
 
 	/**
