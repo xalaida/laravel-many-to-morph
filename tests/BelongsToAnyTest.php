@@ -82,6 +82,28 @@ class BelongsToAnyTest extends TestCase
 	}
 
 	#[Test]
+	public function it_attaches_belongs_to_any_models_with_pivot_attributes(): void
+	{
+		/** @var Page $page */
+		$page = Page::create();
+
+		$heroSection = HeroSection::create([
+			'heading' => 'Hero Section'
+		]);
+
+		$page->components()->attach($heroSection, [
+			'position' => 69,
+		]);
+
+		$this->assertDatabaseHas('page_components', [
+			'page_id' => $page->id,
+			'page_component_id' => $heroSection->id,
+			'page_component_type' => $heroSection->getMorphClass(),
+			'position' => 69,
+		]);
+	}
+
+	#[Test]
     public function it_gets_belongs_to_any_models(): void
     {
         /** @var Page $page */
@@ -112,6 +134,41 @@ class BelongsToAnyTest extends TestCase
         static::assertTrue($components[1]->is($demoSection));
         static::assertTrue($components[2]->is($faqSection));
     }
+
+	#[Test]
+	public function it_sorts_models_by_pivot_attribute(): void
+	{
+		/** @var Page $page */
+		$page = Page::create();
+
+		$page->components()->attach(
+			$faqSection = FaqSection::create([
+				'heading' => 'FAQ Section'
+			]),
+			['position' => 2]
+		);
+
+		$page->components()->attach(
+			$demoSection = DemoSection::create([
+				'heading' => 'Demo Section'
+			]),
+			['position' => 1]
+		);
+
+		$page->components()->attach(
+			$heroSection = HeroSection::create([
+				'heading' => 'Hero Section'
+			]),
+			['position' => 0]
+		);
+
+		$components = $page->components()->orderBy('position')->get();
+
+		static::assertCount(3, $components);
+		static::assertTrue($components[0]->is($heroSection));
+		static::assertTrue($components[1]->is($demoSection));
+		static::assertTrue($components[2]->is($faqSection));
+	}
 
 	#[Test]
 	public function it_eager_loads_belongs_to_any_models(): void

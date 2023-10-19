@@ -10,14 +10,14 @@ use Illuminate\Database\Eloquent\Model;
 trait Attach
 {
 	/**
-	 * @todo add extra pivot attributes
+	 * @see \Illuminate\Database\Eloquent\Relations\BelongsToMany::attach()
 	 */
-	public function attach(Model $model): void
+	public function attach(Model $model, array $pivot = []): void
 	{
-		$this->getQuery()->insert([
+		$this->getQuery()->insert(array_merge([
 			$this->pivotForeignKeyName => $this->getParent()->getAttribute($this->parentKeyName),
 			$this->pivotMorphTypeName => $model->getMorphClass(),
 			$this->pivotMorphKeyName => $model->getKey(),
-		]);
+		], $pivot));
 	}
 }
