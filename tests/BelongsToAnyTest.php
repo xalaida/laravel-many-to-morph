@@ -11,7 +11,7 @@ use Nevadskiy\ManyToAny\HasBelongsToAny;
 use Nevadskiy\ManyToAny\BelongsToAny;
 use PHPUnit\Framework\Attributes\Test;
 
-class MorphAnyTest extends TestCase
+class BelongsToAnyTest extends TestCase
 {
     use RefreshDatabase;
 
