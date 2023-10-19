@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 class BelongsToAny extends Relation
 {
 	use InteractsWithDictionary;
+	use MorphableConstraints;
 	use LazyLoading;
 	use EagerLoading;
 	use Attach;
@@ -51,13 +52,21 @@ class BelongsToAny extends Relation
 
 	protected function buildPivotQuery(Builder $query): Builder
 	{
+		return $this->newMorphPivot($query)->newQuery();
+	}
+
+	/**
+	 * @todo ability to configure morph pivot class.
+	 */
+	protected function newMorphPivot(Builder $query): MorphPivot
+	{
 		$pivot = new MorphPivot();
 
 		$pivot->setConnection($query->getConnection()->getName());
 
 		$pivot->setTable($this->pivotTable);
 
-		return $pivot->newQuery();
+		return $pivot;
 	}
 
 	/**

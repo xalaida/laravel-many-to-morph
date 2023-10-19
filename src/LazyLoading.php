@@ -102,22 +102,18 @@ trait LazyLoading
 
 	/**
 	 * @see MorphTo::getResultsByType
-	 *
-	 * @todo constraints
-	 * @todo eager loads
-	 * @todo eager load counts
 	 */
 	protected function getModelsByMorphType(string $morphType, array $keys): Collection
 	{
 		$instance = $this->newModelByMorphType($morphType);
 
+		$query = $instance->newQuery();
+
+		$this->applyMorphableConstraints($query, get_class($instance));
+
 		$keyName = $instance->getKeyName();
 
-		return $instance->newQuery()
-			->{$this->whereInMethod($instance, $keyName)}(
-				$instance->qualifyColumn($keyName), $keys
-			)
-			->get();
+		return $query->{$this->whereInMethod($instance, $keyName)}($instance->qualifyColumn($keyName), $keys)->get();
 	}
 
 	/**
