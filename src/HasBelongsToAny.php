@@ -2,8 +2,12 @@
 
 namespace Nevadskiy\ManyToAny;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
+/**
+ * @mixin Model
+ */
 trait HasBelongsToAny
 {
 	protected function belongsToAny(

@@ -12,9 +12,10 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 
 class BelongsToAny extends Relation
 {
-	use GetResults;
-	use Attach;
 	use InteractsWithDictionary;
+	use LazyLoading;
+	use EagerLoading;
+	use Attach;
 
 	protected $pivotTable;
 	protected $pivotForeignKeyName;
@@ -71,63 +72,10 @@ class BelongsToAny extends Relation
 	}
 
 	/**
-	 * @see BelongsToMany::addConstraints
+	 * @todo ability to configure collection class.
 	 */
-	public function addConstraints(): void
+	protected function newCollection(array $models = []): Collection
 	{
-		if (static::$constraints) {
-			$this->addWhereConstraints();
-		}
-	}
-
-	/**
-	 * @see BelongsToMany::addWhereConstraints
-	 */
-	protected function addWhereConstraints(): void
-	{
-		$this->query->where([
-			$this->getQualifiedForeignPivotKeyName() => $this->parent->getAttribute($this->parentKeyName)
-		]);
-	}
-
-	/**
-	 * @see BelongsToMany::getQualifiedForeignPivotKeyName
-	 */
-	public function getQualifiedForeignPivotKeyName(): string
-	{
-		return $this->qualifyPivotColumn($this->pivotForeignKeyName);
-	}
-
-	/**
-	 * @see BelongsToMany::qualifyPivotColumn
-	 */
-	public function qualifyPivotColumn(string $column): string
-	{
-		return str_contains($column, '.')
-			? $column
-			: "{$this->pivotTable}.{$column}";
-	}
-
-	public function addEagerConstraints(array $models)
-	{
-		// TODO: Implement addEagerConstraints() method.
-	}
-
-	public function initRelation(array $models, $relation)
-	{
-		// TODO: Implement initRelation() method.
-	}
-
-	public function match(array $models, Collection $results, $relation)
-	{
-		// TODO: Implement match() method.
-	}
-
-	/**
-	 * @todo use columns dictionary with morph types: [FaqSection::class => ['id', 'heading'], HeroSection::class => ['id', ['heading']]
-	 */
-	public function get($columns = ['*']): Collection
-	{
-		return $this->getResults();
+		return new Collection($models);
 	}
 }

@@ -9,14 +9,60 @@ use Illuminate\Database\Eloquent\Relations\MorphPivot;
 /**
  * @mixin BelongsToAny
  */
-trait GetResults
+trait LazyLoading
 {
-	public function getResults(): Collection
+	/**
+	 * @see BelongsToMany::addConstraints()
+	 */
+	public function addConstraints(): void
+	{
+		if (static::$constraints) {
+			$this->addWhereConstraints();
+		}
+	}
+
+	/**
+	 * @see BelongsToMany::addWhereConstraints()
+	 */
+	protected function addWhereConstraints(): void
+	{
+		$this->query->where([
+			$this->getQualifiedForeignPivotKeyName() => $this->parent->getAttribute($this->parentKeyName)
+		]);
+	}
+
+	/**
+	 * @see BelongsToMany::getQualifiedForeignPivotKeyName()
+	 */
+	public function getQualifiedForeignPivotKeyName(): string
+	{
+		return $this->qualifyPivotColumn($this->pivotForeignKeyName);
+	}
+
+	/**
+	 * @see BelongsToMany::qualifyPivotColumn()
+	 */
+	public function qualifyPivotColumn(string $column): string
+	{
+		return str_contains($column, '.')
+			? $column
+			: "{$this->pivotTable}.{$column}";
+	}
+
+	/**
+	 * @see BelongsToMany::getResults()
+	 */
+	public function getResults()
 	{
 		if ($this->parent->getAttribute($this->parentKeyName) === null) {
 			return $this->newCollection();
 		}
 
+		return $this->get();
+	}
+
+	public function get($columns = ['*']): Collection
+	{
 		$pivotModels = $this->query->get();
 
 		$keysByMorphType = $this->getKeysByMorphType($pivotModels);
@@ -98,13 +144,5 @@ trait GetResults
 		$model->setRelation($this->accessor, $pivotModel);
 
 		return $model;
-	}
-
-	/**
-	 * @todo ability to configure collection class.
-	 */
-	protected function newCollection(array $models = []): Collection
-	{
-		return new Collection($models);
 	}
 }

@@ -3,6 +3,7 @@
 namespace Nevadskiy\ManyToAny\Tests;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -25,7 +26,6 @@ class BelongsToAnyTest extends TestCase
             $table->timestamps();
         });
 
-        // Pivot table
         Schema::create('page_components', function (Blueprint $table) {
             $table->id();
             $table->foreignId('page_id')->constrained('pages');
@@ -33,26 +33,31 @@ class BelongsToAnyTest extends TestCase
             $table->integer('position')->unsigned()->default(0);
         });
 
-        // Related table #1
         Schema::create('hero_sections', function (Blueprint $table) {
             $table->id();
             $table->string('heading');
             $table->timestamps();
         });
 
-        // Related table #2
         Schema::create('demo_sections', function (Blueprint $table) {
             $table->id();
             $table->string('heading');
             $table->timestamps();
         });
 
-        // Related table #3
         Schema::create('faq_sections', function (Blueprint $table) {
             $table->id();
             $table->string('heading');
             $table->timestamps();
         });
+
+		Schema::create('faq_section_items', function (Blueprint $table) {
+			$table->id();
+			$table->foreignId('faq_section_id')->constrained('faq_sections');
+			$table->string('question');
+			$table->string('answer');
+			$table->timestamps();
+		});
 
         Model::unguard();
     }
@@ -108,18 +113,76 @@ class BelongsToAnyTest extends TestCase
         static::assertTrue($components[2]->is($faqSection));
     }
 
+	#[Test]
+	public function it_eager_loads_belongs_to_any_models(): void
+	{
+		/** @var Page $page */
+		$page = Page::create();
+
+		$page->components()->attach(
+			FaqSection::create([
+				'heading' => 'FAQ Section'
+			])
+		);
+
+		$pages = Page::query()->with('components')->get();
+
+		static::assertCount(1, $pages);
+		static::assertTrue($pages[0]->relationLoaded('components'));
+		static::assertCount(1, $pages[0]->components);
+	}
+
+	#[Test]
+	public function it_eager_loads_belongs_to_any_nested_models(): void
+	{
+		/** @var Page $page */
+		$page = Page::create();
+
+		/** @var FaqSection $faqSection */
+		$faqSection = FaqSection::create([
+			'heading' => 'FAQ Section'
+		]);
+
+		$faqSection->items()->createMany([
+			[
+				'question' => 'First question',
+				'answer' => 'First answer',
+			],
+			[
+				'question' => 'Second question',
+				'answer' => 'Second answer',
+			],
+			[
+				'question' => 'Third question',
+				'answer' => 'Third answer',
+			]
+		]);
+
+		$page->components()->attach($faqSection);
+
+		$pages = Page::query()
+			->with(['components' => function (BelongsToAny $relation) {
+				$relation->morphWith([
+					FaqSection::class => ['items'],
+				]);
+			}])
+			->get();
+
+		static::assertCount(1, $pages);
+		static::assertTrue($pages[0]->relationLoaded('components'));
+		static::assertCount(1, $pages[0]->components);
+		static::assertTrue($pages[0]->components[0]->relationLoaded('items'));
+		static::assertCount(3, $pages[0]->components[0]->items);
+	}
+
     protected function tearDown(): void
     {
-        // Parent table
-        Schema::drop('pages');
-
-        // Pivot table
+		Schema::drop('faq_section_items');
+		Schema::drop('faq_sections');
+		Schema::drop('hero_sections');
+		Schema::drop('demo_sections');
         Schema::drop('page_components');
-
-        // Related tables
-        Schema::drop('hero_sections');
-        Schema::drop('demo_sections');
-        Schema::drop('faq_sections');
+		Schema::drop('pages');
 
         parent::tearDown();
     }
@@ -153,8 +216,17 @@ class DemoSection extends Model
 
 class FaqSection extends Model
 {
+	public function items(): HasMany
+	{
+		return $this->hasMany(FaqSectionItem::class);
+	}
+
     public function pages(): MorphToMany
     {
         return $this->morphToMany(Page::class, 'section');
     }
+}
+
+class FaqSectionItem extends Model
+{
 }
