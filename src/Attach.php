@@ -1,11 +1,11 @@
 <?php
 
-namespace Nevadskiy\MorphAny;
+namespace Nevadskiy\BelongsToAny;
 
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @mixin MorphAny
+ * @mixin BelongsToAny
  */
 trait Attach
 {

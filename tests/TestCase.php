@@ -1,6 +1,6 @@
 <?php
 
-namespace Nevadskiy\MorphAny\Tests;
+namespace Nevadskiy\BelongsToAny\Tests;
 
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 

@@ -1,13 +1,13 @@
 <?php
 
-namespace Nevadskiy\MorphAny;
+namespace Nevadskiy\BelongsToAny;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphPivot;
 
 /**
- * @mixin MorphAny
+ * @mixin BelongsToAny
  */
 trait GetResults
 {

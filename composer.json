@@ -19,12 +19,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Nevadskiy\\MorphAny\\": "src/"
+            "Nevadskiy\\ManyToAny\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Nevadskiy\\MorphAny\\Tests\\": "tests/"
+            "Nevadskiy\\ManyToAny\\Tests\\": "tests/"
         }
     },
     "config": {

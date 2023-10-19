@@ -1,14 +1,14 @@
 <?php
 
-namespace Nevadskiy\MorphAny\Tests;
+namespace Nevadskiy\BelongsToAny\Tests;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
-use Nevadskiy\MorphAny\HasMorphedByAny;
-use Nevadskiy\MorphAny\MorphAny;
+use Nevadskiy\BelongsToAny\HasBelongsToAny;
+use Nevadskiy\BelongsToAny\BelongsToAny;
 use PHPUnit\Framework\Attributes\Test;
 
 class MorphAnyTest extends TestCase
@@ -128,9 +128,9 @@ class MorphAnyTest extends TestCase
 
 class Page extends Model
 {
-    use HasMorphedByAny;
+    use HasBelongsToAny;
 
-    public function sections(): MorphAny
+    public function sections(): BelongsToAny
     {
         return $this->morphedByAny('page_section');
     }

@@ -1,14 +1,10 @@
 <?php
 
-namespace Nevadskiy\MorphAny;
+namespace Nevadskiy\BelongsToAny;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-/**
- * @mixin Model
- */
-trait HasMorphedByAny
+trait HasBelongsToAny
 {
 	protected function morphedByAny(
 		string $morphName,
@@ -17,7 +13,7 @@ trait HasMorphedByAny
 		string $pivotMorphForeignKeyName = null,
 		string $pivotForeignKeyName = null,
 		string $parentKeyName = null,
-	): MorphAny
+	): BelongsToAny
 	{
 		$pivotTable = $pivotTable ?? Str::plural($morphName);
 
@@ -38,9 +34,9 @@ trait HasMorphedByAny
 		string $pivotMorphForeignKeyName,
 		string $pivotForeignKeyName,
 		string $parentKeyName
-	): MorphAny
+	): BelongsToAny
 	{
-		return new MorphAny(
+		return new BelongsToAny(
 			query: $this->newQuery(),
 			parent: $this,
 			pivotTable: $pivotTable,
