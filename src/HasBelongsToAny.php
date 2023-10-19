@@ -1,12 +1,12 @@
 <?php
 
-namespace Nevadskiy\BelongsToAny;
+namespace Nevadskiy\ManyToAny;
 
 use Illuminate\Support\Str;
 
 trait HasBelongsToAny
 {
-	protected function morphedByAny(
+	protected function belongsToAny(
 		string $morphName,
 		string $pivotTable = null,
 		string $pivotMorphTypeName = null,

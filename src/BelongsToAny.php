@@ -1,6 +1,6 @@
 <?php
 
-namespace Nevadskiy\BelongsToAny;
+namespace Nevadskiy\ManyToAny;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;

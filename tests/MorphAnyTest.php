@@ -1,14 +1,14 @@
 <?php
 
-namespace Nevadskiy\BelongsToAny\Tests;
+namespace Nevadskiy\ManyToAny\Tests;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
-use Nevadskiy\BelongsToAny\HasBelongsToAny;
-use Nevadskiy\BelongsToAny\BelongsToAny;
+use Nevadskiy\ManyToAny\HasBelongsToAny;
+use Nevadskiy\ManyToAny\BelongsToAny;
 use PHPUnit\Framework\Attributes\Test;
 
 class MorphAnyTest extends TestCase
