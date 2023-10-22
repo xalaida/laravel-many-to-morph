@@ -1,6 +1,6 @@
 <?php
 
-namespace Nevadskiy\ManyToAny;
+namespace Nevadskiy\ManyToMorph;
 
 use Illuminate\Database\Eloquent\Collection;
 

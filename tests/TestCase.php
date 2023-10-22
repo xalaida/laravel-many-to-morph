@@ -1,6 +1,6 @@
 <?php
 
-namespace Nevadskiy\ManyToAny\Tests;
+namespace Nevadskiy\ManyToMorph\Tests;
 
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 

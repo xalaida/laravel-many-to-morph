@@ -1,6 +1,6 @@
 <?php
 
-namespace Nevadskiy\ManyToAny\Tests;
+namespace Nevadskiy\ManyToMorph\Tests;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
-use Nevadskiy\ManyToAny\HasManyToMorph;
-use Nevadskiy\ManyToAny\ManyToMorph;
+use Nevadskiy\ManyToMorph\HasManyToMorph;
+use Nevadskiy\ManyToMorph\ManyToMorph;
 use PHPUnit\Framework\Attributes\Test;
 
 class ManyToMorphTest extends TestCase
