@@ -76,7 +76,7 @@ trait LazyLoading
 
 	protected function getKeysByMorphType(Collection $pivotModels): array
 	{
-		$keysByMorphType = [];
+		$map = [];
 
 		foreach ($pivotModels as $pivotModel) {
 			$morphType = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphTypeName));
@@ -86,7 +86,13 @@ trait LazyLoading
 				continue;
 			}
 
-			$keysByMorphType[$morphType][$morphKey] = true;
+			$map[$morphType][$morphKey] = true;
+		}
+
+		$keysByMorphType = [];
+
+		foreach ($map as $morphType => $keys) {
+			$keysByMorphType[$morphType] = array_keys($keys);
 		}
 
 		return $keysByMorphType;
@@ -127,7 +133,7 @@ trait LazyLoading
 		$morphType = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphTypeName));
 		$morphKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphKeyName));
 
-		$model = $modelsByMorphType[$morphType][$morphKey]; // @todo handle missing model...
+		$model = $modelsByMorphType[$morphType][$morphKey];
 
 		$model->setRelation($this->accessor, $pivotModel);
 
