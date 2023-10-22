@@ -76,6 +76,16 @@ class ManyToMorph extends Relation
 	}
 
 	/**
+	 * @see BelongsToMany::qualifyPivotColumn()
+	 */
+	public function qualifyPivotColumn(string $column): string
+	{
+		return str_contains($column, '.')
+			? $column
+			: "{$this->pivotTable}.{$column}";
+	}
+
+	/**
 	 * @see \Illuminate\Database\Eloquent\Relations\BelongsToMany::attach()
 	 */
 	public function attach(Model $model, array $pivot = []): void

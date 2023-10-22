@@ -32,16 +32,6 @@ trait LazyLoading
 	}
 
 	/**
-	 * @see BelongsToMany::qualifyPivotColumn()
-	 */
-	public function qualifyPivotColumn(string $column): string
-	{
-		return str_contains($column, '.')
-			? $column
-			: "{$this->pivotTable}.{$column}";
-	}
-
-	/**
 	 * @see BelongsToMany::getResults()
 	 */
 	public function getResults()
@@ -68,7 +58,7 @@ trait LazyLoading
 		$models = [];
 
 		foreach ($pivotModels as $pivotModel) {
-			$models[] = $this->getModelForPivot($pivotModel, $modelsByMorphType);
+			$models[] = $this->mapModelForPivot($pivotModel, $modelsByMorphType);
 		}
 
 		return $this->newCollection($models);
@@ -128,7 +118,7 @@ trait LazyLoading
 		});
 	}
 
-	protected function getModelForPivot(MorphPivot $pivotModel, array $modelsByMorphType): Model
+	protected function mapModelForPivot(MorphPivot $pivotModel, array $modelsByMorphType): Model
 	{
 		$morphType = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphTypeName));
 		$morphKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphKeyName));
