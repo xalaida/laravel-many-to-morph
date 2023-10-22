@@ -112,11 +112,16 @@ class ManyToMorphTest extends TestCase
 			'heading' => 'Hero Section'
 		]);
 
-		$page->components()->attach($heroSection, ['position' => 1]);
+		$page->components()->attach($heroSection, ['position' => 0]);
 
-		$page->components()->update($heroSection, ['position' => 2]);
+		$page->components()->updateExistingPivot($heroSection, ['position' => 5]);
 
-		$this->assertDatabaseCount('page_components', 0);
+		$this->assertDatabaseHas('page_components', [
+			'page_id' => $page->id,
+			'page_component_id' => $heroSection->id,
+			'page_component_type' => $heroSection->getMorphClass(),
+			'position' => 5,
+		]);
 	}
 
 	#[Test]

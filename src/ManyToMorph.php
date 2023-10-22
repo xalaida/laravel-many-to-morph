@@ -16,8 +16,6 @@ class ManyToMorph extends Relation
 	use MorphableConstraints;
 	use LazyLoading;
 	use EagerLoading;
-	use Attach;
-	use Detach;
 
 	protected $pivotConnection;
 	protected $pivotTable;
@@ -53,6 +51,9 @@ class ManyToMorph extends Relation
 		parent::__construct($this->newMorphPivotQuery(), $parent);
 	}
 
+	/**
+	 * @todo make pivot in constructor
+	 */
 	protected function newMorphPivotQuery(): Builder
 	{
 		return $this->newMorphPivot()->newQuery();
@@ -69,7 +70,50 @@ class ManyToMorph extends Relation
 
 		$pivot->setTable($this->pivotTable);
 
+		$pivot->timestamps = false;
+
 		return $pivot;
+	}
+
+	/**
+	 * @see \Illuminate\Database\Eloquent\Relations\BelongsToMany::attach()
+	 */
+	public function attach(Model $model, array $pivot = []): void
+	{
+		$this->newMorphPivotQuery()
+			->insert(array_merge([
+				$this->pivotForeignKeyName => $this->getParent()->getAttribute($this->parentKeyName),
+				$this->pivotMorphTypeName => $model->getMorphClass(),
+				$this->pivotMorphKeyName => $model->getKey(),
+			], $pivot));
+	}
+
+	/**
+	 * @see \Illuminate\Database\Eloquent\Relations\BelongsToMany::updateExistingPivot()
+	 */
+	public function updateExistingPivot(Model $model, array $pivot): void
+	{
+		$this->newMorphPivotQuery()
+			->where([
+				$this->qualifyColumn($this->pivotForeignKeyName) => $this->getParent()->getAttribute($this->parentKeyName),
+				$this->qualifyColumn($this->pivotMorphTypeName) => $model->getMorphClass(),
+				$this->qualifyColumn($this->pivotMorphKeyName) => $model->getKey(),
+			])
+			->update($pivot);
+	}
+
+	/**
+	 * @see \Illuminate\Database\Eloquent\Relations\BelongsToMany::detach()
+	 */
+	public function detach(Model $model): void
+	{
+		$this->newMorphPivotQuery()
+			->where([
+				$this->qualifyPivotColumn($this->pivotForeignKeyName) => $this->getParent()->getAttribute($this->parentKeyName),
+				$this->qualifyPivotColumn($this->pivotMorphTypeName) => $model->getMorphClass(),
+				$this->qualifyPivotColumn($this->pivotMorphKeyName) => $model->getKey(),
+			])
+			->delete();
 	}
 
 	/**
