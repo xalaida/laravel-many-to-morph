@@ -297,7 +297,7 @@ class HeroSection extends Model
 {
     public function pages(): MorphToMany
     {
-        return $this->morphToMany(Page::class, 'section');
+        return $this->morphToMany(Page::class, 'page_component');
     }
 }
 
@@ -305,7 +305,7 @@ class DemoSection extends Model
 {
     public function pages(): MorphToMany
     {
-        return $this->morphToMany(Page::class, 'section');
+        return $this->morphToMany(Page::class, 'page_component');
     }
 }
 
@@ -318,7 +318,7 @@ class FaqSection extends Model
 
     public function pages(): MorphToMany
     {
-        return $this->morphToMany(Page::class, 'section');
+        return $this->morphToMany(Page::class, 'page_component');
     }
 }
 
