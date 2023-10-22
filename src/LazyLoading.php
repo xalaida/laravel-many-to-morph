@@ -27,16 +27,8 @@ trait LazyLoading
 	protected function addWhereConstraints(): void
 	{
 		$this->query->where([
-			$this->getQualifiedForeignPivotKeyName() => $this->parent->getAttribute($this->parentKeyName)
+			$this->qualifyPivotColumn($this->pivotForeignKeyName) => $this->parent->getAttribute($this->parentKeyName)
 		]);
-	}
-
-	/**
-	 * @see BelongsToMany::getQualifiedForeignPivotKeyName()
-	 */
-	public function getQualifiedForeignPivotKeyName(): string
-	{
-		return $this->qualifyPivotColumn($this->pivotForeignKeyName);
 	}
 
 	/**

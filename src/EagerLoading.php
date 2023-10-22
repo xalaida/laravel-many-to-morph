@@ -18,7 +18,7 @@ trait EagerLoading
 
 		$this->whereInEager(
 			$whereIn,
-			$this->getQualifiedForeignPivotKeyName(),
+			$this->qualifyPivotColumn($this->pivotForeignKeyName),
 			$this->getKeys($models, $this->parentKeyName)
 		);
 	}
