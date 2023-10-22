@@ -1,10 +1,10 @@
 {
-    "name": "nevadskiy/laravel-morphed-by-any",
+    "name": "nevadskiy/laravel-many-to-morph",
     "description": "The missing Eloquent relationship.",
     "keywords": [
-        "morphed-by-any",
+        "many-to-morph",
         "many-to-any",
-        "relations",
+        "relation",
         "laravel",
         "eloquent"
     ],
@@ -19,12 +19,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Nevadskiy\\ManyToAny\\": "src/"
+            "Nevadskiy\\ManyToMorph\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Nevadskiy\\ManyToAny\\Tests\\": "tests/"
+            "Nevadskiy\\ManyToMorph\\Tests\\": "tests/"
         }
     },
     "config": {
