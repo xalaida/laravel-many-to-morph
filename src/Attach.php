@@ -14,10 +14,11 @@ trait Attach
 	 */
 	public function attach(Model $model, array $pivot = []): void
 	{
-		$this->getQuery()->insert(array_merge([
-			$this->pivotForeignKeyName => $this->getParent()->getAttribute($this->parentKeyName),
-			$this->pivotMorphTypeName => $model->getMorphClass(),
-			$this->pivotMorphKeyName => $model->getKey(),
-		], $pivot));
+		$this->newMorphPivotQuery()
+			->insert(array_merge([
+				$this->pivotForeignKeyName => $this->getParent()->getAttribute($this->parentKeyName),
+				$this->pivotMorphTypeName => $model->getMorphClass(),
+				$this->pivotMorphKeyName => $model->getKey(),
+			], $pivot));
 	}
 }
