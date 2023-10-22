@@ -91,14 +91,14 @@ class ManyToMorphTest extends TestCase
 		]);
 
 		$page->components()->attach($heroSection, [
-			'position' => 69,
+			'position' => 1337,
 		]);
 
 		$this->assertDatabaseHas('page_components', [
 			'page_id' => $page->id,
 			'page_component_id' => $heroSection->id,
 			'page_component_type' => $heroSection->getMorphClass(),
-			'position' => 69,
+			'position' => 1337,
 		]);
 	}
 
@@ -114,13 +114,13 @@ class ManyToMorphTest extends TestCase
 
 		$page->components()->attach($heroSection, ['position' => 0]);
 
-		$page->components()->updateExistingPivot($heroSection, ['position' => 5]);
+		$page->components()->updateExistingPivot($heroSection, ['position' => 1337]);
 
 		$this->assertDatabaseHas('page_components', [
 			'page_id' => $page->id,
 			'page_component_id' => $heroSection->id,
 			'page_component_type' => $heroSection->getMorphClass(),
-			'position' => 5,
+			'position' => 1337,
 		]);
 	}
 
