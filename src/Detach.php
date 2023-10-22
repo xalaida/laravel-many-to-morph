@@ -5,7 +5,7 @@ namespace Nevadskiy\ManyToAny;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @mixin ManyToAny
+ * @mixin ManyToMorph
  */
 trait Detach
 {

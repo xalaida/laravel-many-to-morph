@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
-use Nevadskiy\ManyToAny\HasBelongsToAny;
-use Nevadskiy\ManyToAny\ManyToAny;
+use Nevadskiy\ManyToAny\HasManyToMorph;
+use Nevadskiy\ManyToAny\ManyToMorph;
 use PHPUnit\Framework\Attributes\Test;
 
-class ManyToAnyTest extends TestCase
+class ManyToMorphTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -100,6 +100,23 @@ class ManyToAnyTest extends TestCase
 			'page_component_type' => $heroSection->getMorphClass(),
 			'position' => 69,
 		]);
+	}
+
+	#[Test]
+	public function it_updates_pivot_attributes(): void
+	{
+		/** @var Page $page */
+		$page = Page::create();
+
+		$heroSection = HeroSection::create([
+			'heading' => 'Hero Section'
+		]);
+
+		$page->components()->attach($heroSection, ['position' => 1]);
+
+		$page->components()->update($heroSection, ['position' => 2]);
+
+		$this->assertDatabaseCount('page_components', 0);
 	}
 
 	#[Test]
@@ -234,7 +251,7 @@ class ManyToAnyTest extends TestCase
 		$page->components()->attach($faqSection);
 
 		$pages = Page::query()
-			->with(['components' => function (ManyToAny $relation) {
+			->with(['components' => function (ManyToMorph $relation) {
 				$relation->morphWith([
 					FaqSection::class => ['items'],
 				]);
@@ -263,11 +280,11 @@ class ManyToAnyTest extends TestCase
 
 class Page extends Model
 {
-    use HasBelongsToAny;
+    use HasManyToMorph;
 
-    public function components(): ManyToAny
+    public function components(): ManyToMorph
     {
-        return $this->belongsToAny('page_component');
+        return $this->manyToMorph('page_component');
     }
 }
 

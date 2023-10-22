@@ -8,16 +8,16 @@ use Illuminate\Support\Str;
 /**
  * @mixin Model
  */
-trait HasBelongsToAny
+trait HasManyToMorph
 {
-	protected function belongsToAny(
+	protected function manyToMorph(
 		string $morphName,
 		string $pivotTable = null,
 		string $pivotMorphTypeName = null,
 		string $pivotMorphKeyName = null,
 		string $pivotForeignKeyName = null,
 		string $parentKeyName = null,
-	): ManyToAny
+	): ManyToMorph
 	{
 		$pivotTable = $pivotTable ?? Str::plural($morphName);
 
@@ -29,18 +29,18 @@ trait HasBelongsToAny
 
 		$parentKeyName = $parentKeyName ?? $this->getKeyName();
 
-		return $this->newBelongsToAny($pivotTable, $pivotMorphTypeName, $pivotMorphKeyName, $pivotForeignKeyName, $parentKeyName);
+		return $this->newManyToMorph($pivotTable, $pivotMorphTypeName, $pivotMorphKeyName, $pivotForeignKeyName, $parentKeyName);
 	}
 
-	protected function newBelongsToAny(
+	protected function newManyToMorph(
 		string $pivotTable,
 		string $pivotMorphTypeName,
 		string $pivotMorphKeyName,
 		string $pivotForeignKeyName,
 		string $parentKeyName
-	): ManyToAny
+	): ManyToMorph
 	{
-		return new ManyToAny(
+		return new ManyToMorph(
 			query: $this->newQuery(),
 			parent: $this,
 			pivotTable: $pivotTable,

@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\Concerns\InteractsWithDictionary;
 use Illuminate\Database\Eloquent\Relations\MorphPivot;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
-class ManyToAny extends Relation
+class ManyToMorph extends Relation
 {
 	use InteractsWithDictionary;
 	use MorphableConstraints;
