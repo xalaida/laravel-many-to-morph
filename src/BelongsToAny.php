@@ -17,7 +17,9 @@ class BelongsToAny extends Relation
 	use LazyLoading;
 	use EagerLoading;
 	use Attach;
+	use Detach;
 
+	protected $pivotConnection;
 	protected $pivotTable;
 	protected $pivotForeignKeyName;
 	protected $pivotMorphTypeName;
@@ -41,28 +43,29 @@ class BelongsToAny extends Relation
 		string  $parentKeyName,
 	)
 	{
+		$this->pivotConnection = $query->getConnection()->getName();
 		$this->pivotTable = $pivotTable;
 		$this->pivotForeignKeyName = $pivotForeignKeyName;
 		$this->pivotMorphTypeName = $pivotMorphTypeName;
 		$this->pivotMorphKeyName = $pivotMorphKeyName;
 		$this->parentKeyName = $parentKeyName;
 
-		parent::__construct($this->buildPivotQuery($query), $parent);
+		parent::__construct($this->newMorphPivotQuery(), $parent);
 	}
 
-	protected function buildPivotQuery(Builder $query): Builder
+	protected function newMorphPivotQuery(): Builder
 	{
-		return $this->newMorphPivot($query)->newQuery();
+		return $this->newMorphPivot()->newQuery();
 	}
 
 	/**
 	 * @todo ability to configure morph pivot class.
 	 */
-	protected function newMorphPivot(Builder $query): MorphPivot
+	protected function newMorphPivot(): MorphPivot
 	{
 		$pivot = new MorphPivot();
 
-		$pivot->setConnection($query->getConnection()->getName());
+		$pivot->setConnection($this->pivotConnection);
 
 		$pivot->setTable($this->pivotTable);
 
