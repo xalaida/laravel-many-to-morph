@@ -20,7 +20,6 @@ class BelongsToAnyTest extends TestCase
     {
         parent::setUp();
 
-        // Parent table
         Schema::create('pages', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
@@ -101,6 +100,23 @@ class BelongsToAnyTest extends TestCase
 			'page_component_type' => $heroSection->getMorphClass(),
 			'position' => 69,
 		]);
+	}
+
+	#[Test]
+	public function it_detaches_belongs_to_any_models(): void
+	{
+		/** @var Page $page */
+		$page = Page::create();
+
+		$heroSection = HeroSection::create([
+			'heading' => 'Hero Section'
+		]);
+
+		$page->components()->attach($heroSection);
+
+		$page->components()->detach($heroSection);
+
+		$this->assertDatabaseCount('page_components', 0);
 	}
 
 	#[Test]
