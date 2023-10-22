@@ -12,11 +12,14 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 
 class ManyToMorph extends Relation
 {
-	use InteractsWithDictionary;
+	use InteractsWithDictionary; // @todo remove this trait
 	use MorphableConstraints;
 	use LazyLoading;
 	use EagerLoading;
 
+	/**
+	 * @todo remove "pivot" prefix
+	 */
 	protected $pivotConnection;
 	protected $pivotTable;
 	protected $pivotForeignKeyName;
@@ -80,9 +83,7 @@ class ManyToMorph extends Relation
 	 */
 	public function qualifyPivotColumn(string $column): string
 	{
-		return str_contains($column, '.')
-			? $column
-			: "{$this->pivotTable}.{$column}";
+		return "{$this->pivotTable}.{$column}";
 	}
 
 	/**

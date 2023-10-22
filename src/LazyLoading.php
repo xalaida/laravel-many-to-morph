@@ -34,7 +34,7 @@ trait LazyLoading
 	/**
 	 * @see BelongsToMany::getResults()
 	 */
-	public function getResults()
+	public function getResults(): Collection
 	{
 		if ($this->parent->getAttribute($this->parentKeyName) === null) {
 			return $this->newCollection();
@@ -66,22 +66,18 @@ trait LazyLoading
 
 	protected function getKeysByMorphType(Collection $pivotModels): array
 	{
-		$map = [];
+		$keyMap = [];
 
 		foreach ($pivotModels as $pivotModel) {
 			$morphType = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphTypeName));
 			$morphKey = $this->getDictionaryKey($pivotModel->getAttribute($this->pivotMorphKeyName));
 
-			if (! $morphType || ! $morphKey) {
-				continue;
-			}
-
-			$map[$morphType][$morphKey] = true;
+			$keyMap[$morphType][$morphKey] = true;
 		}
 
 		$keysByMorphType = [];
 
-		foreach ($map as $morphType => $keys) {
+		foreach ($keyMap as $morphType => $keys) {
 			$keysByMorphType[$morphType] = array_keys($keys);
 		}
 
