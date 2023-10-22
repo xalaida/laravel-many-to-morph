@@ -5,7 +5,7 @@ namespace Nevadskiy\ManyToAny;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
- * @mixin BelongsToAny
+ * @mixin ManyToAny
  */
 trait MorphableConstraints
 {

@@ -5,7 +5,7 @@ namespace Nevadskiy\ManyToAny;
 use Illuminate\Database\Eloquent\Collection;
 
 /**
- * @mixin BelongsToAny
+ * @mixin ManyToAny
  */
 trait EagerLoading
 {

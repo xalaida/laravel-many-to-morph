@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphPivot;
 
 /**
- * @mixin BelongsToAny
+ * @mixin ManyToAny
  */
 trait LazyLoading
 {

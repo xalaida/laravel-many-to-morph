@@ -17,7 +17,7 @@ trait HasBelongsToAny
 		string $pivotMorphKeyName = null,
 		string $pivotForeignKeyName = null,
 		string $parentKeyName = null,
-	): BelongsToAny
+	): ManyToAny
 	{
 		$pivotTable = $pivotTable ?? Str::plural($morphName);
 
@@ -38,9 +38,9 @@ trait HasBelongsToAny
 		string $pivotMorphKeyName,
 		string $pivotForeignKeyName,
 		string $parentKeyName
-	): BelongsToAny
+	): ManyToAny
 	{
-		return new BelongsToAny(
+		return new ManyToAny(
 			query: $this->newQuery(),
 			parent: $this,
 			pivotTable: $pivotTable,

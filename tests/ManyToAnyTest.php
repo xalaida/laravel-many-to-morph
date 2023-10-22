@@ -9,10 +9,10 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 use Nevadskiy\ManyToAny\HasBelongsToAny;
-use Nevadskiy\ManyToAny\BelongsToAny;
+use Nevadskiy\ManyToAny\ManyToAny;
 use PHPUnit\Framework\Attributes\Test;
 
-class BelongsToAnyTest extends TestCase
+class ManyToAnyTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -234,7 +234,7 @@ class BelongsToAnyTest extends TestCase
 		$page->components()->attach($faqSection);
 
 		$pages = Page::query()
-			->with(['components' => function (BelongsToAny $relation) {
+			->with(['components' => function (ManyToAny $relation) {
 				$relation->morphWith([
 					FaqSection::class => ['items'],
 				]);
@@ -265,7 +265,7 @@ class Page extends Model
 {
     use HasBelongsToAny;
 
-    public function components(): BelongsToAny
+    public function components(): ManyToAny
     {
         return $this->belongsToAny('page_component');
     }
