@@ -1,29 +1,34 @@
 name: PHPUnit
 
-on: [push]
+on:
+    - push
 
 jobs:
     test:
-        runs-on: ubuntu-latest
         strategy:
             matrix:
-                phpunit_image: ['php:8.0-cli-alpine']
-                composer_prefer_lowest: [0, 1]
+                platform:
+                    - {image: 'php:8.0-cli-alpine', php: 8.0.2}
+                prefer_lowest:
+                    - 1
+                    - 0
 
-        env:
-            PHPUNIT_IMAGE: ${{ matrix.phpunit_image }}
-            COMPOSER_PREFER_LOWEST: ${{ matrix.composer_prefer_lowest }}
-            COMPOSER_PREFER_STABLE: 1
+        runs-on: ubuntu-latest
+        container:
+            image: ${{ matrix.platform.image }}
+            env:
+                COMPOSER_PREFER_LOWEST: ${{ matrix.prefer_lowest }}
+                COMPOSER_PREFER_STABLE: 1
 
         steps:
             - name: Checkout code
               uses: actions/checkout@v2
 
-            - name: Build Docker containers
-              run: docker compose build
+            - name: Configure platform PHP version for Composer
+              run: docker run --rm composer config platform.php ${{ matrix.composer_platform_php }}
 
             - name: Install Composer dependencies
-              run: docker compose run composer install --no-interaction --no-progress
+              run: docker run --rm composer install
 
             - name: Run PHPUnit
-              run: docker compose run phpunit
+              run: vendor/bin/phpunit
