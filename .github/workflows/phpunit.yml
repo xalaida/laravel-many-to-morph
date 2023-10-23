@@ -5,6 +5,13 @@ on:
 
 jobs:
     test:
+        runs-on: ubuntu-latest
+        container:
+            image: ${{ matrix.image }}
+            env:
+                COMPOSER_PREFER_STABLE: 1
+                COMPOSER_PREFER_LOWEST: ${{ matrix.prefer_lowest }}
+
         strategy:
             matrix:
                 image:
@@ -12,13 +19,6 @@ jobs:
                 prefer_lowest:
                     - 1
                     - 0
-
-        runs-on: ubuntu-latest
-        container:
-            image: ${{ matrix.platform.image }}
-            env:
-                COMPOSER_PREFER_LOWEST: ${{ matrix.prefer_lowest }}
-                COMPOSER_PREFER_STABLE: 1
 
         steps:
             - name: Checkout code
@@ -28,7 +28,7 @@ jobs:
               run: curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
             - name: Install Composer dependencies
-              run: composer install --no-interaction --no-progress
+              run: composer update --no-interaction --no-progress
 
             - name: Run PHPUnit
               run: vendor/bin/phpunit
