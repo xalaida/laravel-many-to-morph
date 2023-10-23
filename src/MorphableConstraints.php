@@ -9,11 +9,11 @@ use Illuminate\Database\Eloquent\Builder;
  */
 trait MorphableConstraints
 {
-	protected $morphableEagerLoads = [];
+	protected array $morphableEagerLoads = [];
 
-	protected $morphableEagerLoadCounts = [];
+	protected array $morphableEagerLoadCounts = [];
 
-	protected $morphableConstraints = [];
+	protected array $morphableConstraints = [];
 
 	public function morphWith(array $with): self
 	{

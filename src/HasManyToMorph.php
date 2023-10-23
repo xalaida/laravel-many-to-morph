@@ -3,6 +3,7 @@
 namespace Nevadskiy\ManyToMorph;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphPivot;
 use Illuminate\Support\Str;
 
 /**
@@ -29,10 +30,28 @@ trait HasManyToMorph
 
 		$parentKeyColumn = $parentKeyColumn ?? $this->getKeyName();
 
+		return $this->newManyToMorph($table, $morphTypeColumn, $morphKeyColumn, $foreignKeyColumn, $parentKeyColumn);
+	}
+
+	protected function newManyToMorph(
+		string $table,
+		string $morphTypeColumn,
+		string $morphKeyColumn,
+		string $foreignKeyColumn,
+		string $parentKeyColumn
+	): ManyToMorph
+	{
+		$morphPivot = new MorphPivot();
+
+		$morphPivot->setConnection($this->getConnection()->getName());
+
+		$morphPivot->setTable($table);
+
+		$morphPivot->timestamps = false;
+
 		return new ManyToMorph(
-			$this->newQuery(),
 			$this,
-			$table,
+			$morphPivot,
 			$foreignKeyColumn,
 			$morphTypeColumn,
 			$morphKeyColumn,
