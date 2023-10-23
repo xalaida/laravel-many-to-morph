@@ -14,10 +14,9 @@ trait EagerLoading
 	 */
 	public function addEagerConstraints(array $models): void
 	{
-		$whereIn = $this->whereInMethod($this->parent, $this->parentKeyName);
+		$whereInMethod = $this->whereInMethod($this->parent, $this->parentKeyName);
 
-		$this->whereInEager(
-			$whereIn,
+		$this->query->{$whereInMethod}(
 			$this->qualifyPivotColumn($this->pivotForeignKeyName),
 			$this->getKeys($models, $this->parentKeyName)
 		);
@@ -78,8 +77,6 @@ trait EagerLoading
 	 */
 	public function getEager(): Collection
 	{
-		return $this->eagerKeysWereEmpty
-			? $this->newCollection()
-			: $this->get();
+		return $this->get();
 	}
 }

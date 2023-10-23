@@ -10,7 +10,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 use Nevadskiy\ManyToMorph\HasManyToMorph;
 use Nevadskiy\ManyToMorph\ManyToMorph;
-use PHPUnit\Framework\Attributes\Test;
 
 class ManyToMorphTest extends TestCase
 {
@@ -61,7 +60,9 @@ class ManyToMorphTest extends TestCase
         Model::unguard();
     }
 
-	#[Test]
+	/**
+	 * @test
+	 */
 	public function it_attaches_belongs_to_any_models(): void
 	{
 		/** @var Page $page */
@@ -80,7 +81,9 @@ class ManyToMorphTest extends TestCase
 		]);
 	}
 
-	#[Test]
+	/**
+	 * @test
+	 */
 	public function it_attaches_belongs_to_any_models_with_pivot_attributes(): void
 	{
 		/** @var Page $page */
@@ -102,7 +105,9 @@ class ManyToMorphTest extends TestCase
 		]);
 	}
 
-	#[Test]
+	/**
+	 * @test
+	 */
 	public function it_updates_pivot_attributes(): void
 	{
 		/** @var Page $page */
@@ -124,7 +129,9 @@ class ManyToMorphTest extends TestCase
 		]);
 	}
 
-	#[Test]
+	/**
+	 * @test
+	 */
 	public function it_detaches_belongs_to_any_models(): void
 	{
 		/** @var Page $page */
@@ -141,7 +148,9 @@ class ManyToMorphTest extends TestCase
 		$this->assertDatabaseCount('page_components', 0);
 	}
 
-	#[Test]
+	/**
+	 * @test
+	 */
     public function it_gets_belongs_to_any_models(): void
     {
         /** @var Page $page */
@@ -173,7 +182,9 @@ class ManyToMorphTest extends TestCase
         static::assertTrue($components[2]->is($faqSection));
     }
 
-	#[Test]
+	/**
+	 * @test
+	 */
 	public function it_sorts_models_by_pivot_attribute(): void
 	{
 		/** @var Page $page */
@@ -208,7 +219,9 @@ class ManyToMorphTest extends TestCase
 		static::assertTrue($components[2]->is($faqSection));
 	}
 
-	#[Test]
+	/**
+	 * @test
+	 */
 	public function it_eager_loads_belongs_to_any_models(): void
 	{
 		/** @var Page $page */
@@ -227,7 +240,9 @@ class ManyToMorphTest extends TestCase
 		static::assertCount(1, $pages[0]->components);
 	}
 
-	#[Test]
+	/**
+	 * @test
+	 */
 	public function it_eager_loads_belongs_to_any_nested_models(): void
 	{
 		/** @var Page $page */
