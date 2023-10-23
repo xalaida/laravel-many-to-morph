@@ -27,5 +27,8 @@ jobs:
             - name: Install Composer
               run: curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+            - name: Install Composer dependencies
+              run: composer install --no-interaction --no-progress
+
             - name: Run PHPUnit
               run: vendor/bin/phpunit
