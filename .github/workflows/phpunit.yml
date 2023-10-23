@@ -1,0 +1,24 @@
+name: PHPUnit
+
+on: [push]
+
+jobs:
+    test:
+        strategy:
+            matrix:
+                container: [ 'php:8.0-cli-alpine' ]
+                prefer-versions: [ 'highest' ]
+
+        name: Run PHPUnit on ${{ matrix.container }} with ${{ matrix.dependencies }} dependencies
+        runs-on: ubuntu-latest
+        container: ${{ matrix.container }}
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Install Composer dependencies
+              run: docker run --rm --volume $PWD:/app composer install
+
+            - name: Run PHPUnit
+              run: vendor/bin/phpunit
