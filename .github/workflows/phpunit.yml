@@ -4,21 +4,26 @@ on: [push]
 
 jobs:
     test:
+        runs-on: ubuntu-latest
         strategy:
             matrix:
-                container: [ 'php:8.0-cli-alpine' ]
-                prefer-versions: [ 'highest' ]
+                phpunit_image: [php:8.0-cli-alpine]
+                composer_prefer_lowest: [0, 1]
 
-        name: Run PHPUnit on ${{ matrix.container }} with ${{ matrix.dependencies }} dependencies
-        runs-on: ubuntu-latest
-        container: ${{ matrix.container }}
+        env:
+            PHPUNIT_IMAGE: ${{ matrix.phpunit_image }}
+            COMPOSER_PREFER_LOWEST: ${{ matrix.composer_prefer_lowest }}
+            COMPOSER_PREFER_STABLE: 1
 
         steps:
             - name: Checkout code
               uses: actions/checkout@v2
 
+            - name: Build Docker containers
+              run: docker compose build
+
             - name: Install Composer dependencies
-              run: docker run --rm --volume $PWD:/app composer install
+              run: docker compose run composer install --no-interaction --no-progress
 
             - name: Run PHPUnit
-              run: vendor/bin/phpunit
+              run: docker compose run phpunit
