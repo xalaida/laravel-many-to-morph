@@ -7,7 +7,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                phpunit_image: [php:8.0-cli-alpine]
+                phpunit_image: ['php:8.0-cli-alpine']
                 composer_prefer_lowest: [0, 1]
 
         env:
