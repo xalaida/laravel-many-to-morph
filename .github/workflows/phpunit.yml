@@ -16,6 +16,7 @@ jobs:
             matrix:
                 image:
                     - 'php:8.0-cli-alpine'
+                    - 'php:8.1-cli-alpine'
                 prefer_lowest:
                     - 1
                     - 0
