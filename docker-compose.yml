@@ -11,7 +11,7 @@ services:
         working_dir: /app
 
     phpunit:
-        image: ${php:8.0-cli-alpine}
+        image: php:8.0-cli-alpine
         volumes:
             - ./:/app
         working_dir: /app
