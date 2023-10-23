@@ -6,6 +6,7 @@ services:
         environment:
             COMPOSER_CACHE_DIR: /app/.cache/composer
             COMPOSER_PREFER_STABLE: 1
+            COMPOSER_PREFER_LOWEST: 1
         volumes:
             - ./:/app
         working_dir: /app
