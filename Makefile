@@ -21,10 +21,6 @@ composer.install:
 composer.update:
 	docker compose run --rm composer update
 
-# Downgrade Composer dependencies to lowest versions
-composer.install.lowest:
-	docker compose run --rm composer update --prefer-lowest --prefer-stable
-
 # Uninstall Composer dependencies
 composer.uninstall:
 	sudo rm -rf vendor
