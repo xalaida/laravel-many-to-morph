@@ -12,42 +12,31 @@ trait HasManyToMorph
 {
 	protected function manyToMorph(
 		string $morphName,
-		string $pivotTable = null,
-		string $pivotMorphTypeName = null,
-		string $pivotMorphKeyName = null,
-		string $pivotForeignKeyName = null,
-		string $parentKeyName = null
+		string $table = null,
+		string $morphTypeColumn = null,
+		string $morphKeyColumn = null,
+		string $foreignKeyColumn = null,
+		string $parentKeyColumn = null
 	): ManyToMorph
 	{
-		$pivotTable = $pivotTable ?? Str::plural($morphName);
+		$table = $table ?? Str::plural($morphName);
 
-		$pivotMorphTypeName = $pivotMorphTypeName ?? "{$morphName}_type";
+		$morphTypeColumn = $morphTypeColumn ?? "{$morphName}_type";
 
-		$pivotMorphKeyName = $pivotMorphKeyName ?? "{$morphName}_id";
+		$morphKeyColumn = $morphKeyColumn ?? "{$morphName}_id";
 
-		$pivotForeignKeyName = $pivotForeignKeyName ?? $this->getForeignKey();
+		$foreignKeyColumn = $foreignKeyColumn ?? $this->getForeignKey();
 
-		$parentKeyName = $parentKeyName ?? $this->getKeyName();
+		$parentKeyColumn = $parentKeyColumn ?? $this->getKeyName();
 
-		return $this->newManyToMorph($pivotTable, $pivotMorphTypeName, $pivotMorphKeyName, $pivotForeignKeyName, $parentKeyName);
-	}
-
-	protected function newManyToMorph(
-		string $pivotTable,
-		string $pivotMorphTypeName,
-		string $pivotMorphKeyName,
-		string $pivotForeignKeyName,
-		string $parentKeyName
-	): ManyToMorph
-	{
 		return new ManyToMorph(
 			$this->newQuery(),
 			$this,
-			$pivotTable,
-			$pivotForeignKeyName,
-			$pivotMorphTypeName,
-			$pivotMorphKeyName,
-			$parentKeyName,
+			$table,
+			$foreignKeyColumn,
+			$morphTypeColumn,
+			$morphKeyColumn,
+			$parentKeyColumn,
 		);
 	}
 }
