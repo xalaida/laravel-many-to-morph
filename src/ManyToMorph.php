@@ -2,7 +2,6 @@
 
 namespace Nevadskiy\ManyToMorph;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -15,6 +14,10 @@ class ManyToMorph extends Relation
 
 	protected MorphPivot $morphPivot;
 
+	/**
+	 * @todo use MorphPivot props for column names.
+	 */
+
 	protected string $foreignKeyColumn;
 
 	protected string $morphTypeColumn;
@@ -23,9 +26,7 @@ class ManyToMorph extends Relation
 
 	protected string $parentKeyColumn;
 
-	protected string $accessor = 'pivot';
-
-	protected string $using;
+	protected string $pivotAccessor = 'pivot';
 
 	public function __construct(
 		Model $parent,
@@ -41,12 +42,7 @@ class ManyToMorph extends Relation
 		$this->morphKeyColumn = $morphKeyColumn;
 		$this->parentKeyColumn = $parentKeyColumn;
 
-		parent::__construct($this->newMorphPivotQuery(), $parent);
-	}
-
-	protected function newMorphPivotQuery(): Builder
-	{
-		return $this->morphPivot->newQuery();
+		parent::__construct($this->morphPivot->newQuery(), $parent);
 	}
 
 	/**
@@ -159,7 +155,7 @@ class ManyToMorph extends Relation
 
 		$model = $modelsByMorphType[$morphType][$morphKey];
 
-		$model->setRelation($this->accessor, $pivotModel);
+		$model->setRelation($this->pivotAccessor, $pivotModel);
 
 		return $model;
 	}
@@ -194,7 +190,7 @@ class ManyToMorph extends Relation
 	 */
 	public function match(array $models, Collection $results, $relation): array
 	{
-		$dictionary = $this->buildDictionary($results);
+		$dictionary = $this->getDictionaryForResults($results);
 
 		foreach ($models as $model) {
 			$dictionaryKey = $model->getAttribute($this->parentKeyColumn);
@@ -212,12 +208,12 @@ class ManyToMorph extends Relation
 	/**
 	 * @see BelongsToMany::buildDictionary()
 	 */
-	protected function buildDictionary(Collection $results): array
+	protected function getDictionaryForResults(Collection $results): array
 	{
 		$dictionary = [];
 
 		foreach ($results as $result) {
-			$dictionaryKey = $result->getAttribute($this->accessor)->getAttribute($this->foreignKeyColumn);
+			$dictionaryKey = $result->getAttribute($this->pivotAccessor)->getAttribute($this->foreignKeyColumn);
 
 			$dictionary[$dictionaryKey][] = $result;
 		}
@@ -226,19 +222,11 @@ class ManyToMorph extends Relation
 	}
 
 	/**
-	 * @see BelongsToMany::getEager()
-	 */
-	public function getEager(): Collection
-	{
-		return $this->get();
-	}
-
-	/**
 	 * @see \Illuminate\Database\Eloquent\Relations\BelongsToMany::attach()
 	 */
 	public function attach(Model $model, array $pivot = []): void
 	{
-		$this->newMorphPivotQuery()
+		$this->morphPivot->newQuery()
 			->insert(array_merge([
 				$this->foreignKeyColumn => $this->getParent()->getAttribute($this->parentKeyColumn),
 				$this->morphTypeColumn => $model->getMorphClass(),
@@ -251,7 +239,7 @@ class ManyToMorph extends Relation
 	 */
 	public function updateExistingPivot(Model $model, array $pivot): void
 	{
-		$this->newMorphPivotQuery()
+		$this->morphPivot->newQuery()
 			->where([
 				$this->morphPivot->qualifyColumn($this->foreignKeyColumn) => $this->getParent()->getAttribute($this->parentKeyColumn),
 				$this->morphPivot->qualifyColumn($this->morphTypeColumn) => $model->getMorphClass(),
@@ -265,7 +253,7 @@ class ManyToMorph extends Relation
 	 */
 	public function detach(Model $model): void
 	{
-		$this->newMorphPivotQuery()
+		$this->morphPivot->newQuery()
 			->where([
 				$this->morphPivot->qualifyColumn($this->foreignKeyColumn) => $this->getParent()->getAttribute($this->parentKeyColumn),
 				$this->morphPivot->qualifyColumn($this->morphTypeColumn) => $model->getMorphClass(),
