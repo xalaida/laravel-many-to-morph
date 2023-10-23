@@ -9,13 +9,13 @@ use Illuminate\Database\Eloquent\Builder;
  */
 trait MorphableConstraints
 {
-	protected array $morphableEagerLoads = [];
+	protected $morphableEagerLoads = [];
 
-	protected array $morphableEagerLoadCounts = [];
+	protected $morphableEagerLoadCounts = [];
 
-	protected array $morphableConstraints = [];
+	protected $morphableConstraints = [];
 
-	public function morphWith(array $with): static
+	public function morphWith(array $with): self
 	{
 		$this->morphableEagerLoads = array_merge(
 			$this->morphableEagerLoads, $with
@@ -24,7 +24,7 @@ trait MorphableConstraints
 		return $this;
 	}
 
-	public function morphWithCount(array $withCount): static
+	public function morphWithCount(array $withCount): self
 	{
 		$this->morphableEagerLoadCounts = array_merge(
 			$this->morphableEagerLoadCounts, $withCount
@@ -33,7 +33,7 @@ trait MorphableConstraints
 		return $this;
 	}
 
-	public function constrain(array $callbacks): static
+	public function constrain(array $callbacks): self
 	{
 		$this->morphableConstraints = array_merge(
 			$this->morphableConstraints, $callbacks

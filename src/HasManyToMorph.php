@@ -16,7 +16,7 @@ trait HasManyToMorph
 		string $pivotMorphTypeName = null,
 		string $pivotMorphKeyName = null,
 		string $pivotForeignKeyName = null,
-		string $parentKeyName = null,
+		string $parentKeyName = null
 	): ManyToMorph
 	{
 		$pivotTable = $pivotTable ?? Str::plural($morphName);
@@ -41,13 +41,13 @@ trait HasManyToMorph
 	): ManyToMorph
 	{
 		return new ManyToMorph(
-			query: $this->newQuery(),
-			parent: $this,
-			pivotTable: $pivotTable,
-			pivotForeignKeyName: $pivotForeignKeyName,
-			pivotMorphTypeName: $pivotMorphTypeName,
-			pivotMorphKeyName: $pivotMorphKeyName,
-			parentKeyName: $parentKeyName,
+			$this->newQuery(),
+			$this,
+			$pivotTable,
+			$pivotForeignKeyName,
+			$pivotMorphTypeName,
+			$pivotMorphKeyName,
+			$parentKeyName,
 		);
 	}
 }
