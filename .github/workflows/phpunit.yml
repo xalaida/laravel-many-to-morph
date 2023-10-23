@@ -7,8 +7,8 @@ jobs:
     test:
         strategy:
             matrix:
-                platform:
-                    - {image: 'php:8.0-cli-alpine', php: 8.0.2}
+                image:
+                    - 'php:8.0-cli-alpine'
                 prefer_lowest:
                     - 1
                     - 0
@@ -24,11 +24,8 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v2
 
-            - name: Configure platform PHP version for Composer
-              run: docker run --rm composer config platform.php ${{ matrix.composer_platform_php }}
-
-            - name: Install Composer dependencies
-              run: docker run --rm composer install
+            - name: Install Composer
+              run: curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
             - name: Run PHPUnit
               run: vendor/bin/phpunit
