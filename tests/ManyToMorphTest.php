@@ -2,12 +2,12 @@
 
 namespace Nevadskiy\ManyToMorph\Tests;
 
+use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Schema;
 use Nevadskiy\ManyToMorph\HasManyToMorph;
 use Nevadskiy\ManyToMorph\ManyToMorph;
 
@@ -19,37 +19,37 @@ class ManyToMorphTest extends TestCase
     {
         parent::setUp();
 
-        Schema::create('pages', function (Blueprint $table) {
+        Capsule::schema()->create('pages', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
         });
 
-        Schema::create('page_components', function (Blueprint $table) {
+        Capsule::schema()->create('page_components', function (Blueprint $table) {
             $table->id();
             $table->foreignId('page_id')->constrained('pages');
             $table->morphs('page_component');
             $table->integer('position')->unsigned()->default(0);
         });
 
-        Schema::create('hero_sections', function (Blueprint $table) {
+        Capsule::schema()->create('hero_sections', function (Blueprint $table) {
             $table->id();
             $table->string('heading');
             $table->timestamps();
         });
 
-        Schema::create('demo_sections', function (Blueprint $table) {
+        Capsule::schema()->create('demo_sections', function (Blueprint $table) {
             $table->id();
             $table->string('heading');
             $table->timestamps();
         });
 
-        Schema::create('faq_sections', function (Blueprint $table) {
+        Capsule::schema()->create('faq_sections', function (Blueprint $table) {
             $table->id();
             $table->string('heading');
             $table->timestamps();
         });
 
-		Schema::create('faq_section_items', function (Blueprint $table) {
+		Capsule::schema()->create('faq_section_items', function (Blueprint $table) {
 			$table->id();
 			$table->foreignId('faq_section_id')->constrained('faq_sections');
 			$table->string('question');
@@ -74,11 +74,12 @@ class ManyToMorphTest extends TestCase
 
 		$page->components()->attach($heroSection);
 
-		$this->assertDatabaseHas('page_components', [
-			'page_id' => $page->id,
-			'page_component_id' => $heroSection->id,
-			'page_component_type' => $heroSection->getMorphClass(),
-		]);
+		$pageComponents = Capsule::table('page_components')->get();
+
+		static::assertCount(1, $pageComponents);
+		static::assertEquals($page->id, $pageComponents[0]->page_id);
+		static::assertEquals($heroSection->id, $pageComponents[0]->page_component_id);
+		static::assertEquals($heroSection->getMorphClass(), $pageComponents[0]->page_component_type);
 	}
 
 	/**
@@ -97,12 +98,13 @@ class ManyToMorphTest extends TestCase
 			'position' => 1337,
 		]);
 
-		$this->assertDatabaseHas('page_components', [
-			'page_id' => $page->id,
-			'page_component_id' => $heroSection->id,
-			'page_component_type' => $heroSection->getMorphClass(),
-			'position' => 1337,
-		]);
+		$pageComponents = Capsule::table('page_components')->get();
+
+		static::assertCount(1, $pageComponents);
+		static::assertEquals($page->id, $pageComponents[0]->page_id);
+		static::assertEquals($heroSection->id, $pageComponents[0]->page_component_id);
+		static::assertEquals($heroSection->getMorphClass(), $pageComponents[0]->page_component_type);
+		static::assertEquals(1337, $pageComponents[0]->position);
 	}
 
 	/**
@@ -121,12 +123,13 @@ class ManyToMorphTest extends TestCase
 
 		$page->components()->updateExistingPivot($heroSection, ['position' => 1337]);
 
-		$this->assertDatabaseHas('page_components', [
-			'page_id' => $page->id,
-			'page_component_id' => $heroSection->id,
-			'page_component_type' => $heroSection->getMorphClass(),
-			'position' => 1337,
-		]);
+		$pageComponents = Capsule::table('page_components')->get();
+
+		static::assertCount(1, $pageComponents);
+		static::assertEquals($page->id, $pageComponents[0]->page_id);
+		static::assertEquals($heroSection->id, $pageComponents[0]->page_component_id);
+		static::assertEquals($heroSection->getMorphClass(), $pageComponents[0]->page_component_type);
+		static::assertEquals(1337, $pageComponents[0]->position);
 	}
 
 	/**
@@ -145,7 +148,7 @@ class ManyToMorphTest extends TestCase
 
 		$page->components()->detach($heroSection);
 
-		$this->assertDatabaseCount('page_components', 0);
+		static::assertCount(0, Capsule::table('page_components')->get());
 	}
 
 	/**
@@ -287,12 +290,12 @@ class ManyToMorphTest extends TestCase
 
     protected function tearDown(): void
     {
-		Schema::drop('faq_section_items');
-		Schema::drop('faq_sections');
-		Schema::drop('hero_sections');
-		Schema::drop('demo_sections');
-        Schema::drop('page_components');
-		Schema::drop('pages');
+		Capsule::schema()->drop('faq_section_items');
+		Capsule::schema()->drop('faq_sections');
+		Capsule::schema()->drop('hero_sections');
+		Capsule::schema()->drop('demo_sections');
+        Capsule::schema()->drop('page_components');
+		Capsule::schema()->drop('pages');
 
         parent::tearDown();
     }
