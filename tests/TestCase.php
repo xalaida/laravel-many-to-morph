@@ -2,20 +2,37 @@
 
 namespace Nevadskiy\ManyToMorph\Tests;
 
-use Orchestra\Testbench\TestCase as OrchestraTestCase;
+use Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Database\Eloquent\Model;
+use PHPUnit\Framework\TestCase as PhpUnit;
 
-class TestCase extends OrchestraTestCase
+class TestCase extends PhpUnit
 {
-    /**
-     * @inheritdoc
-     */
-    protected function getEnvironmentSetUp($app): void
-    {
-        $app['config']->set('database.default', 'testbench');
-        $app['config']->set('database.connections.testbench', [
-            'driver' => 'sqlite',
-            'database' => ':memory:',
-            'prefix' => '',
-        ]);
-    }
+	protected function setUp(): void
+	{
+		$this->setUpCapsule();
+
+		Model::unguard();
+	}
+
+	protected function setUpCapsule(): void
+	{
+		$capsule = new Capsule();
+
+		$capsule->addConnection([
+			'driver' => 'sqlite',
+			'database' => ':memory:',
+		]);
+
+		$capsule->setAsGlobal();
+
+		$capsule->bootEloquent();
+	}
+
+	protected function tearDown(): void
+	{
+		Capsule::connection()->disconnect();
+
+		parent::tearDown();
+	}
 }

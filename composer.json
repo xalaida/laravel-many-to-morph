@@ -14,8 +14,8 @@
         "illuminate/database": "^8.0 || ^9.0 || ^10.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^6.37|^7.34|^8.14"
-    },
+		"phpunit/phpunit": "^9.6"
+	},
     "autoload": {
         "psr-4": {
             "Nevadskiy\\ManyToMorph\\": "src/"
