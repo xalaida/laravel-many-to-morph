@@ -7,29 +7,47 @@ jobs:
     test:
         strategy:
             matrix:
-                platform:
-                    - &php-7.4
-                        image: 'php:7.4-cli-alpine'
-                        dependencies: 'laravel/framework:^8.0'
-                    - &php-8.0
-                        image: 'php:8.0-cli-alpine'
-                        dependencies: 'laravel/framework:^8.0'
-                    - &php-8.1
-                        image: 'php:8.1-cli-alpine'
-                        dependencies:
-                            - 'laravel/framework:^8.65'
-                            - 'laravel/framework:^9.0'
-                            - 'laravel/framework:^10.0'
-                    - &php-8.2
-                        image: 'php:8.2-cli-alpine'
-                        dependencies:
-                            - 'laravel/framework:^9.33'
-                            - 'laravel/framework:^10.0'
-            prefer_lowest: [0, 1]
+                image:
+                    - php:7.4-cli-alpine
+                    - php:8.0-cli-alpine
+                    - php:8.1-cli-alpine
+                    - php:8.2-cli-alpine
+
+                dependencies:
+                    - laravel/framework:^8.0
+                    - laravel/framework:^9.0
+                    - laravel/framework:^10.0
+
+                prefer_lowest:
+                    - 0
+                    - 1
+
+                exclude:
+                    - image: php:7.4-cli-alpine
+                      dependencies: laravel/framework:^10.0
+
+                    - image: php:8.0-cli-alpine
+                      dependencies: laravel/framework:^10.0
+
+                    - image: php:8.1-cli-alpine
+                      dependencies: laravel/framework:^8.0
+
+                    - image: php:8.2-cli-alpine
+                      dependencies: laravel/framework:^8.0
+
+                    - image: php:8.2-cli-alpine
+                      dependencies: laravel/framework:^9.0
+
+                include:
+                    - image: php:8.1-cli-alpine
+                      dependencies: laravel/framework:^8.65
+
+                    - image: php:8.2-cli-alpine
+                      dependencies: laravel/framework:^9.33
 
         runs-on: ubuntu-latest
         container:
-            image: ${{ matrix.platform.image }}
+            image: ${{ matrix.image }}
             env:
                 COMPOSER_PREFER_STABLE: 1
                 COMPOSER_PREFER_LOWEST: ${{ matrix.prefer_lowest }}
@@ -42,7 +60,7 @@ jobs:
               run: curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
             - name: Specify Composer dependencies
-              run: composer require ${{ matrix.platform.dependencies }} --no-update --no-interaction --no-progress
+              run: composer require ${{ matrix.dependencies }} --no-update --no-interaction --no-progress
 
             - name: Update Composer dependencies
               run: composer update --no-interaction --no-progress
