@@ -5,13 +5,6 @@ on:
 
 jobs:
     test:
-        runs-on: ubuntu-latest
-        container:
-            image: ${{ matrix.image }}
-            env:
-                COMPOSER_PREFER_STABLE: 1
-                COMPOSER_PREFER_LOWEST: ${{ matrix.prefer_lowest }}
-
         strategy:
             matrix:
                 image:
@@ -26,6 +19,21 @@ jobs:
                     - 'illuminate/database:^10.0'
 
                 prefer_lowest: [0, 1]
+
+                exclude:
+                    - image: 'php:7.4-cli-alpine'
+                      dependencies: 'illuminate/database:^10.0'
+
+                    - image: 'php:8.0-cli-alpine'
+                      dependencies: 'illuminate/database:^10.0'
+
+        runs-on: ubuntu-latest
+        container:
+            image: ${{ matrix.image }}
+            env:
+                COMPOSER_PREFER_STABLE: 1
+                COMPOSER_PREFER_LOWEST: ${{ matrix.prefer_lowest }}
+
 
         steps:
             - name: Checkout code
