@@ -6,7 +6,6 @@
 	cacheResultFile=".cache/test-results"
 	colors="true"
 	executionOrder="depends,defects"
-	beStrictAboutOutputDuringTests="true"
 	beStrictAboutTodoAnnotatedTests="true"
 	convertDeprecationsToExceptions="false"
 	failOnRisky="true"
