@@ -7,21 +7,21 @@ jobs:
     test:
         runs-on: ubuntu-latest
         container:
-            image: ${{ matrix.image }}
+            image: ${{ matrix.platform.image }}
             env:
                 COMPOSER_PREFER_STABLE: 1
                 COMPOSER_PREFER_LOWEST: ${{ matrix.prefer_lowest }}
 
         strategy:
             matrix:
-                image:
-                    - 'php:7.4-cli-alpine'
-                    - 'php:8.0-cli-alpine'
-                    - 'php:8.1-cli-alpine'
-                    - 'php:8.2-cli-alpine'
-                prefer_lowest:
-                    - 1
-                    - 0
+#                image:
+#                    - 'php:7.4-cli-alpine'
+#                    - 'php:8.0-cli-alpine'
+#                    - 'php:8.1-cli-alpine'
+#                    - 'php:8.2-cli-alpine'
+                platform:
+                  - {image: 'php:7.4-cli-alpine', laravel: 'illuminate/database:^8.0'}
+                prefer_lowest: [0, 1]
 
         steps:
             - name: Checkout code
@@ -29,6 +29,9 @@ jobs:
 
             - name: Install Composer
               run: curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+            - name: Configure Composer dependencies
+              run: composer require ${{ matrix.platform.laravel }}
 
             - name: Install Composer dependencies
               run: composer update --no-interaction --no-progress
