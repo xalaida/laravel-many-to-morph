@@ -27,7 +27,7 @@ jobs:
                       dependencies: 'illuminate/database:^10.0'
 
                     - image: 'php:8.2-cli-alpine'
-                      dependencies: 'illuminate/database:^8.0'
+                      dependencies: 'illuminate/database:^8.65'
 
                     - image: 'php:8.2-cli-alpine'
                       dependencies: 'illuminate/database:^9.0'
