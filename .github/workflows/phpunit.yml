@@ -7,7 +7,7 @@ jobs:
     test:
         runs-on: ubuntu-latest
         container:
-            image: ${{ matrix.platform.image }}
+            image: ${{ matrix.image }}
             env:
                 COMPOSER_PREFER_STABLE: 1
                 COMPOSER_PREFER_LOWEST: ${{ matrix.prefer_lowest }}
@@ -35,7 +35,7 @@ jobs:
               run: curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
             - name: Specify Composer dependencies
-              run: composer require ${{ matrix.platform.dependencies }} --no-update --no-interaction --no-progress
+              run: composer require ${{ matrix.dependencies }} --no-update --no-interaction --no-progress
 
             - name: Update Composer dependencies
               run: composer update --no-interaction --no-progress
