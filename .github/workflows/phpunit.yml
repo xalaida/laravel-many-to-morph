@@ -24,6 +24,9 @@ jobs:
 
                 exclude:
                     - image: php:7.4-cli-alpine
+                      dependencies: laravel/framework:^9.0
+
+                    - image: php:7.4-cli-alpine
                       dependencies: laravel/framework:^10.0
 
                     - image: php:8.0-cli-alpine
