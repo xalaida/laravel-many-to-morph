@@ -36,6 +36,9 @@ jobs:
                     - image: 'php:8.2-cli-alpine'
                       dependencies: 'illuminate/database:^8.0'
 
+                    - image: 'php:8.2-cli-alpine'
+                      dependencies: 'illuminate/database:^9.0'
+
         runs-on: ubuntu-latest
         container:
             image: ${{ matrix.image }}
