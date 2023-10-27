@@ -23,7 +23,6 @@ class ManyToMorphTest extends TestCase
         });
 
         Capsule::schema()->create('page_components', function (Blueprint $table) {
-            $table->id();
             $table->foreignId('page_id')->constrained('pages');
             $table->morphs('page_component');
             $table->integer('position')->unsigned()->default(0);
