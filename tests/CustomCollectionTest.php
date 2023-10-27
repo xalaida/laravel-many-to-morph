@@ -26,7 +26,7 @@ class CustomCollectionTest extends TestCase
             $table->morphs('taggable');
         });
 
-        Capsule::schema()->create('cars', function (Blueprint $table) {
+        Capsule::schema()->create('posts', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->timestamps();
@@ -41,19 +41,19 @@ class CustomCollectionTest extends TestCase
 		$tag = TagForCustomCollection::create();
 
 		$tag->taggables()->attach(
-			CarForCustomCollection::create([
+			PostForCustomCollection::create([
 				'name' => 'Rayfield Caliburn'
 			])
 		);
 
 		static::assertCount(1, $tag->taggables);
 		static::assertInstanceOf(CustomCollection::class, $tag->taggables);
-		static::assertInstanceOf(CarForCustomCollection::class, $tag->taggables[0]);
+		static::assertInstanceOf(PostForCustomCollection::class, $tag->taggables[0]);
 	}
 
     protected function tearDown(): void
     {
-		Capsule::schema()->drop('cars');
+		Capsule::schema()->drop('posts');
         Capsule::schema()->drop('taggables');
 		Capsule::schema()->drop('tags');
 
@@ -74,9 +74,9 @@ class TagForCustomCollection extends Model
     }
 }
 
-class CarForCustomCollection extends Model
+class PostForCustomCollection extends Model
 {
-	protected $table = 'cars';
+	protected $table = 'posts';
 }
 
 class CustomCollection extends Collection

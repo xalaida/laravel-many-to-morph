@@ -28,7 +28,7 @@ class CustomPivotTest extends TestCase
 			$table->timestamps();
         });
 
-        Capsule::schema()->create('cars', function (Blueprint $table) {
+        Capsule::schema()->create('posts', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->timestamps();
@@ -45,7 +45,7 @@ class CustomPivotTest extends TestCase
 		$tag = TagForCustomPivot::create();
 
 		$tag->taggables()->attach(
-			CarForCustomPivot::create([
+			PostsForCustomPivot::create([
 				'name' => 'Rayfield Caliburn'
 			]),
 			['score' => 1337],
@@ -59,7 +59,7 @@ class CustomPivotTest extends TestCase
 
     protected function tearDown(): void
     {
-		Capsule::schema()->drop('cars');
+		Capsule::schema()->drop('posts');
         Capsule::schema()->drop('taggables');
 		Capsule::schema()->drop('tags');
 
@@ -84,7 +84,7 @@ class TaggableForCustomPivot extends Model
 	protected $table = 'taggables';
 }
 
-class CarForCustomPivot extends Model
+class PostsForCustomPivot extends Model
 {
-	protected $table = 'cars';
+	protected $table = 'posts';
 }
