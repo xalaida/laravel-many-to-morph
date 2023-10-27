@@ -4,7 +4,6 @@ namespace Nevadskiy\ManyToMorph;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
 class ManyToMorph extends Relation
@@ -47,9 +46,6 @@ class ManyToMorph extends Relation
 		return $this;
 	}
 
-	/**
-	 * @see BelongsToMany::addConstraints()
-	 */
 	public function addConstraints(): void
 	{
 		if (static::$constraints) {
@@ -57,9 +53,6 @@ class ManyToMorph extends Relation
 		}
 	}
 
-	/**
-	 * @see BelongsToMany::addWhereConstraints()
-	 */
 	protected function addWhereConstraints(): void
 	{
 		$this->query->where([
@@ -67,9 +60,6 @@ class ManyToMorph extends Relation
 		]);
 	}
 
-	/**
-	 * @see BelongsToMany::getResults()
-	 */
 	public function getResults(): Collection
 	{
 		if ($this->parent->getAttribute($this->parentKeyColumn) === null) {
@@ -120,9 +110,6 @@ class ManyToMorph extends Relation
 		return $keysByMorphType;
 	}
 
-	/**
-	 * @see MorphTo::getResultsByType
-	 */
 	protected function getModelsByMorphType(string $morphType, array $keys): Collection
 	{
 		$instance = $this->newModelByMorphType($morphType);
@@ -136,9 +123,6 @@ class ManyToMorph extends Relation
 		return $query->{$this->whereInMethod($instance, $keyName)}($instance->qualifyColumn($keyName), $keys)->get();
 	}
 
-	/**
-	 * @see MorphTo::createModelByType
-	 */
 	public function newModelByMorphType(string $morphType)
 	{
 		$class = Model::getActualClassNameForMorph($morphType);
@@ -162,9 +146,6 @@ class ManyToMorph extends Relation
 		return $model;
 	}
 
-	/**
-	 * @see BelongsToMany::addEagerConstraints()
-	 */
 	public function addEagerConstraints(array $models): void
 	{
 		$whereInMethod = $this->whereInMethod($this->parent, $this->parentKeyColumn);
@@ -175,9 +156,6 @@ class ManyToMorph extends Relation
 		);
 	}
 
-	/**
-	 * @see BelongsToMany::initRelation()
-	 */
 	public function initRelation(array $models, $relation): array
 	{
 		foreach ($models as $model) {
@@ -187,9 +165,6 @@ class ManyToMorph extends Relation
 		return $models;
 	}
 
-	/**
-	 * @see BelongsToMany::match()
-	 */
 	public function match(array $models, Collection $results, $relation): array
 	{
 		$dictionary = $this->getDictionaryForResults($results);
@@ -207,9 +182,6 @@ class ManyToMorph extends Relation
 		return $models;
 	}
 
-	/**
-	 * @see BelongsToMany::buildDictionary()
-	 */
 	protected function getDictionaryForResults(Collection $results): array
 	{
 		$dictionary = [];
@@ -223,9 +195,6 @@ class ManyToMorph extends Relation
 		return $dictionary;
 	}
 
-	/**
-	 * @see \Illuminate\Database\Eloquent\Relations\BelongsToMany::attach()
-	 */
 	public function attach(Model $model, array $pivot = []): void
 	{
 		$this->pivot->newQuery()
@@ -236,9 +205,6 @@ class ManyToMorph extends Relation
 			], $pivot));
 	}
 
-	/**
-	 * @see \Illuminate\Database\Eloquent\Relations\BelongsToMany::updateExistingPivot()
-	 */
 	public function updateExistingPivot(Model $model, array $pivot): void
 	{
 		$this->pivot->newQuery()
@@ -250,9 +216,6 @@ class ManyToMorph extends Relation
 			->update($pivot);
 	}
 
-	/**
-	 * @see \Illuminate\Database\Eloquent\Relations\BelongsToMany::detach()
-	 */
 	public function detach(Model $model): void
 	{
 		$this->pivot->newQuery()
