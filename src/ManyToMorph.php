@@ -12,11 +12,7 @@ class ManyToMorph extends Relation
 {
 	use MorphableConstraints;
 
-	protected MorphPivot $morphPivot;
-
-	/**
-	 * @todo use MorphPivot props for column names.
-	 */
+	protected string $table;
 
 	protected string $foreignKeyColumn;
 
@@ -26,23 +22,39 @@ class ManyToMorph extends Relation
 
 	protected string $parentKeyColumn;
 
+	protected MorphPivot $morphPivot;
+
 	protected string $pivotAccessor = 'pivot';
 
 	public function __construct(
 		Model $parent,
-		MorphPivot $morphPivot,
+		string $table,
 		string $foreignKeyColumn,
 		string $morphTypeColumn,
 		string $morphKeyColumn,
 		string $parentKeyColumn
 	) {
-		$this->morphPivot = $morphPivot;
+		$this->table = $table;
 		$this->foreignKeyColumn = $foreignKeyColumn;
 		$this->morphTypeColumn = $morphTypeColumn;
 		$this->morphKeyColumn = $morphKeyColumn;
 		$this->parentKeyColumn = $parentKeyColumn;
+		$this->morphPivot = $this->newMorphPivot();
 
 		parent::__construct($this->morphPivot->newQuery(), $parent);
+	}
+
+	protected function newMorphPivot(): MorphPivot
+	{
+		$morphPivot = new MorphPivot();
+
+		$morphPivot->setConnection($this->parent->getConnection()->getName());
+
+		$morphPivot->setTable($this->table);
+
+		$morphPivot->timestamps = false;
+
+		return $morphPivot;
 	}
 
 	/**
