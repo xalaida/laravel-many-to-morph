@@ -1,6 +1,6 @@
 {
     "name": "nevadskiy/laravel-many-to-morph",
-    "description": "The missing Eloquent polymorphic relationship.",
+    "description": "The missing polymorphic relationship for Eloquent.",
     "keywords": [
         "many-to-morph",
         "many-to-any",
