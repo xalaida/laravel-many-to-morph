@@ -9,7 +9,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Nevadskiy\ManyToMorph\HasManyToMorph;
 use Nevadskiy\ManyToMorph\ManyToMorph;
 
-class CustomPivotModelTest extends TestCase
+class CustomPivotTest extends TestCase
 {
     protected function setUp(): void
     {
@@ -42,17 +42,17 @@ class CustomPivotModelTest extends TestCase
 	{
 		Carbon::setTestNow($now = Carbon::now()->startOfSecond());
 
-		$tag = Tag::create();
+		$tag = TagForCustomPivot::create();
 
 		$tag->taggables()->attach(
-			Car::create([
+			CarForCustomPivot::create([
 				'name' => 'Rayfield Caliburn'
 			]),
 			['score' => 1337],
 		);
 
 		static::assertCount(1, $tag->taggables);
-		static::assertInstanceOf(Taggable::class, $tag->taggables[0]->pivot);
+		static::assertInstanceOf(TaggableForCustomPivot::class, $tag->taggables[0]->pivot);
 		static::assertEquals(1337, $tag->taggables[0]->pivot->score);
 		static::assertEquals($now, $tag->taggables[0]->pivot->created_at);
 	}
@@ -67,20 +67,24 @@ class CustomPivotModelTest extends TestCase
     }
 }
 
-class Tag extends Model
+class TagForCustomPivot extends Model
 {
     use HasManyToMorph;
 
+	protected $table = 'tags';
+
     public function taggables(): ManyToMorph
     {
-        return $this->manyToMorph('taggable', Taggable::class);
+		return $this->manyToMorph('taggable', TaggableForCustomPivot::class, 'taggable_type', 'taggable_id', 'tag_id');
     }
 }
 
-class Taggable extends Model
+class TaggableForCustomPivot extends Model
 {
+	protected $table = 'taggables';
 }
 
-class Car extends Model
+class CarForCustomPivot extends Model
 {
+	protected $table = 'cars';
 }
