@@ -91,8 +91,6 @@ class ManyToMorphTest extends TestCase
 			'position' => 1337,
 		]);
 
-		// die(var_dump($page->components()->pivot->usesTimestamps()));
-
 		$pageComponents = Capsule::table('page_components')->get();
 
 		static::assertCount(1, $pageComponents);
