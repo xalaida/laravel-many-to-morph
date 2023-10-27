@@ -5,6 +5,7 @@ namespace Nevadskiy\ManyToMorph\Tests;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphPivot;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Schema\Blueprint;
 use Nevadskiy\ManyToMorph\HasManyToMorph;
@@ -283,6 +284,29 @@ class ManyToMorphTest extends TestCase
 		static::assertCount(1, $pages[0]->components);
 		static::assertTrue($pages[0]->components[0]->relationLoaded('items'));
 		static::assertCount(3, $pages[0]->components[0]->items);
+	}
+
+	/**
+	 * @test
+	 */
+	public function it_uses_custom_pivot_accessor(): void
+	{
+		$page = Page::create();
+
+		$page->components()->attach(
+			$heroSection = HeroSection::create([
+				'heading' => 'Hero Section'
+			])
+		);
+
+		$components = $page->components()->as('morphPivot')->get();
+
+		static::assertCount(1, $components);
+		static::assertTrue($components[0]->is($heroSection));
+		static::assertInstanceOf(MorphPivot::class, $components[0]->morphPivot);
+		static::assertEquals($page->getKey(), $components[0]->morphPivot->page_id);
+		static::assertEquals($heroSection->getKey(), $components[0]->morphPivot->page_component_id);
+		static::assertEquals($heroSection->getMorphClass(), $components[0]->morphPivot->page_component_type);
 	}
 
     protected function tearDown(): void

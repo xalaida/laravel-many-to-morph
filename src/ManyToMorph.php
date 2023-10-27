@@ -34,6 +34,7 @@ class ManyToMorph extends Relation
 		string $morphKeyColumn,
 		string $parentKeyColumn
 	) {
+		$this->parent = $parent;
 		$this->table = $table;
 		$this->foreignKeyColumn = $foreignKeyColumn;
 		$this->morphTypeColumn = $morphTypeColumn;
@@ -42,6 +43,13 @@ class ManyToMorph extends Relation
 		$this->pivot = $this->newMorphPivot();
 
 		parent::__construct($this->pivot->newQuery(), $parent);
+	}
+
+	public function as(string $pivotAccessor): ManyToMorph
+	{
+		$this->pivotAccessor = $pivotAccessor;
+
+		return $this;
 	}
 
 	protected function newMorphPivot(): MorphPivot
