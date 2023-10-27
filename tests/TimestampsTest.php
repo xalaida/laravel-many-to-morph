@@ -9,7 +9,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Nevadskiy\ManyToMorph\HasManyToMorph;
 use Nevadskiy\ManyToMorph\ManyToMorph;
 
-class CustomPivotTest extends TestCase
+class TimestampsTest extends TestCase
 {
     protected function setUp(): void
     {
@@ -24,7 +24,6 @@ class CustomPivotTest extends TestCase
 			$table->id();
             $table->foreignId('tag_id')->constrained('pages');
             $table->morphs('taggable');
-            $table->integer('score')->unsigned()->default(0);
 			$table->timestamps();
         });
 
@@ -42,18 +41,15 @@ class CustomPivotTest extends TestCase
 	{
 		Carbon::setTestNow($now = Carbon::now()->startOfSecond());
 
-		$tag = TagForCustomPivot::create();
+		$tag = TagForTimestamps::create();
 
 		$tag->taggables()->attach(
-			PostsForCustomPivot::create([
+			PostsForTimestamps::create([
 				'name' => 'Rayfield Caliburn'
 			]),
-			['score' => 1337],
 		);
 
 		static::assertCount(1, $tag->taggables);
-		static::assertInstanceOf(TaggableForCustomPivot::class, $tag->taggables[0]->pivot);
-		static::assertEquals(1337, $tag->taggables[0]->pivot->score);
 		static::assertEquals($now, $tag->taggables[0]->pivot->updated_at);
 		static::assertEquals($now, $tag->taggables[0]->pivot->created_at);
 	}
@@ -68,7 +64,7 @@ class CustomPivotTest extends TestCase
     }
 }
 
-class TagForCustomPivot extends Model
+class TagForTimestamps extends Model
 {
     use HasManyToMorph;
 
@@ -76,16 +72,12 @@ class TagForCustomPivot extends Model
 
     public function taggables(): ManyToMorph
     {
-		return $this->manyToMorph('taggable', TaggableForCustomPivot::class, 'taggable_type', 'taggable_id', 'tag_id');
+		return $this->manyToMorph('taggable', 'taggables', 'taggable_type', 'taggable_id', 'tag_id')
+			->withTimestamps();
     }
 }
 
-class TaggableForCustomPivot extends Model
-{
-	protected $table = 'taggables';
-}
-
-class PostsForCustomPivot extends Model
+class PostsForTimestamps extends Model
 {
 	protected $table = 'posts';
 }

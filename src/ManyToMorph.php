@@ -48,6 +48,13 @@ class ManyToMorph extends Relation
 		return $this;
 	}
 
+	public function withTimestamps(): ManyToMorph
+	{
+		$this->pivot->timestamps = true;
+
+		return $this;
+	}
+
 	public function collectUsing($collection): ManyToMorph
 	{
 		$this->collection = $collection;
