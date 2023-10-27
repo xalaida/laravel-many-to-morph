@@ -22,7 +22,7 @@ class ManyToMorph extends Relation
 
 	protected string $parentKeyColumn;
 
-	protected MorphPivot $morphPivot;
+	protected MorphPivot $pivot;
 
 	protected string $pivotAccessor = 'pivot';
 
@@ -39,9 +39,9 @@ class ManyToMorph extends Relation
 		$this->morphTypeColumn = $morphTypeColumn;
 		$this->morphKeyColumn = $morphKeyColumn;
 		$this->parentKeyColumn = $parentKeyColumn;
-		$this->morphPivot = $this->newMorphPivot();
+		$this->pivot = $this->newMorphPivot();
 
-		parent::__construct($this->morphPivot->newQuery(), $parent);
+		parent::__construct($this->pivot->newQuery(), $parent);
 	}
 
 	protected function newMorphPivot(): MorphPivot
@@ -73,7 +73,7 @@ class ManyToMorph extends Relation
 	protected function addWhereConstraints(): void
 	{
 		$this->query->where([
-			$this->morphPivot->qualifyColumn($this->foreignKeyColumn) => $this->parent->getAttribute($this->parentKeyColumn)
+			$this->pivot->qualifyColumn($this->foreignKeyColumn) => $this->parent->getAttribute($this->parentKeyColumn)
 		]);
 	}
 
@@ -180,7 +180,7 @@ class ManyToMorph extends Relation
 		$whereInMethod = $this->whereInMethod($this->parent, $this->parentKeyColumn);
 
 		$this->query->{$whereInMethod}(
-			$this->morphPivot->qualifyColumn($this->foreignKeyColumn),
+			$this->pivot->qualifyColumn($this->foreignKeyColumn),
 			$this->getKeys($models, $this->parentKeyColumn)
 		);
 	}
@@ -238,7 +238,7 @@ class ManyToMorph extends Relation
 	 */
 	public function attach(Model $model, array $pivot = []): void
 	{
-		$this->morphPivot->newQuery()
+		$this->pivot->newQuery()
 			->insert(array_merge([
 				$this->foreignKeyColumn => $this->getParent()->getAttribute($this->parentKeyColumn),
 				$this->morphTypeColumn => $model->getMorphClass(),
@@ -251,11 +251,11 @@ class ManyToMorph extends Relation
 	 */
 	public function updateExistingPivot(Model $model, array $pivot): void
 	{
-		$this->morphPivot->newQuery()
+		$this->pivot->newQuery()
 			->where([
-				$this->morphPivot->qualifyColumn($this->foreignKeyColumn) => $this->getParent()->getAttribute($this->parentKeyColumn),
-				$this->morphPivot->qualifyColumn($this->morphTypeColumn) => $model->getMorphClass(),
-				$this->morphPivot->qualifyColumn($this->morphKeyColumn) => $model->getKey(),
+				$this->pivot->qualifyColumn($this->foreignKeyColumn) => $this->getParent()->getAttribute($this->parentKeyColumn),
+				$this->pivot->qualifyColumn($this->morphTypeColumn) => $model->getMorphClass(),
+				$this->pivot->qualifyColumn($this->morphKeyColumn) => $model->getKey(),
 			])
 			->update($pivot);
 	}
@@ -265,11 +265,11 @@ class ManyToMorph extends Relation
 	 */
 	public function detach(Model $model): void
 	{
-		$this->morphPivot->newQuery()
+		$this->pivot->newQuery()
 			->where([
-				$this->morphPivot->qualifyColumn($this->foreignKeyColumn) => $this->getParent()->getAttribute($this->parentKeyColumn),
-				$this->morphPivot->qualifyColumn($this->morphTypeColumn) => $model->getMorphClass(),
-				$this->morphPivot->qualifyColumn($this->morphKeyColumn) => $model->getKey(),
+				$this->pivot->qualifyColumn($this->foreignKeyColumn) => $this->getParent()->getAttribute($this->parentKeyColumn),
+				$this->pivot->qualifyColumn($this->morphTypeColumn) => $model->getMorphClass(),
+				$this->pivot->qualifyColumn($this->morphKeyColumn) => $model->getKey(),
 			])
 			->delete();
 	}
