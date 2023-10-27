@@ -41,13 +41,17 @@ trait HasManyToMorph
 		string $parentKeyColumn
 	): ManyToMorph
 	{
-		$pivot = new MorphPivot();
+		if (is_subclass_of($table, Model::class)) {
+			$pivot = new $table;
+		} else {
+			$pivot = new MorphPivot();
 
-		$pivot->setConnection($this->getConnection()->getName());
+			$pivot->setConnection($this->getConnection()->getName());
 
-		$pivot->setTable($table);
+			$pivot->setTable($table);
 
-		$pivot->timestamps = false;
+			$pivot->timestamps = false;
+		}
 
 		return new ManyToMorph(
 			$this,

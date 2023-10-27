@@ -53,8 +53,6 @@ class ManyToMorphTest extends TestCase
 			$table->string('answer');
 			$table->timestamps();
 		});
-
-        Model::unguard();
     }
 
 	/**
@@ -312,8 +310,8 @@ class ManyToMorphTest extends TestCase
     {
 		Capsule::schema()->drop('faq_section_items');
 		Capsule::schema()->drop('faq_sections');
-		Capsule::schema()->drop('hero_sections');
 		Capsule::schema()->drop('demo_sections');
+		Capsule::schema()->drop('hero_sections');
         Capsule::schema()->drop('page_components');
 		Capsule::schema()->drop('pages');
 
