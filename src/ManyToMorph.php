@@ -22,6 +22,8 @@ class ManyToMorph extends Relation
 
 	protected string $pivotAccessor = 'pivot';
 
+	protected $collection = Collection::class;
+
 	public function __construct(
 		Model $parent,
 		Model $pivot,
@@ -46,6 +48,22 @@ class ManyToMorph extends Relation
 		return $this;
 	}
 
+	public function collectUsing($collection): ManyToMorph
+	{
+		$this->collection = $collection;
+
+		return $this;
+	}
+
+	protected function newCollection(array $models = []): Collection
+	{
+		if (is_callable($this->collection)) {
+			return call_user_func($this->collection, $models);
+		}
+
+		return new $this->collection($models);
+	}
+
 	public function addConstraints(): void
 	{
 		if (static::$constraints) {
@@ -67,14 +85,6 @@ class ManyToMorph extends Relation
 		}
 
 		return $this->get();
-	}
-
-	/**
-	 * @todo ability to configure collection class.
-	 */
-	protected function newCollection(array $models = []): Collection
-	{
-		return new Collection($models);
 	}
 
 	public function get($columns = ['*']): Collection
