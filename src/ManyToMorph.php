@@ -5,14 +5,13 @@ namespace Nevadskiy\ManyToMorph;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\MorphPivot;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
 class ManyToMorph extends Relation
 {
 	use MorphableConstraints;
 
-	protected MorphPivot $pivot;
+	protected Model $pivot;
 
 	protected string $foreignKeyColumn;
 
@@ -26,7 +25,7 @@ class ManyToMorph extends Relation
 
 	public function __construct(
 		Model $parent,
-		MorphPivot $pivot,
+		Model $pivot,
 		string $foreignKeyColumn,
 		string $morphTypeColumn,
 		string $morphKeyColumn,
@@ -151,7 +150,7 @@ class ManyToMorph extends Relation
 		});
 	}
 
-	protected function mapModelForPivot(MorphPivot $pivotModel, array $modelsByMorphType): Model
+	protected function mapModelForPivot(Model $pivotModel, array $modelsByMorphType): Model
 	{
 		$morphType = $pivotModel->getAttribute($this->morphTypeColumn);
 		$morphKey = $pivotModel->getAttribute($this->morphKeyColumn);
