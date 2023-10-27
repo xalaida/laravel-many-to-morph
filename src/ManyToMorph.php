@@ -69,6 +69,14 @@ class ManyToMorph extends Relation
 		return $this->get();
 	}
 
+	/**
+	 * @todo ability to configure collection class.
+	 */
+	protected function newCollection(array $models = []): Collection
+	{
+		return new Collection($models);
+	}
+
 	public function get($columns = ['*']): Collection
 	{
 		$pivotModels = $this->query->get();
@@ -198,14 +206,15 @@ class ManyToMorph extends Relation
 	public function attach(Model $model, array $pivot = []): void
 	{
 		$this->pivot->newQuery()
-			->insert(array_merge([
+			->toBase()
+			->insert($this->addTimestamps(array_merge([
 				$this->foreignKeyColumn => $this->getParent()->getAttribute($this->parentKeyColumn),
 				$this->morphTypeColumn => $model->getMorphClass(),
 				$this->morphKeyColumn => $model->getKey(),
-			], $pivot));
+			], $pivot)));
 	}
 
-	public function updateExistingPivot(Model $model, array $pivot): void
+	public function updateExistingPivot(Model $model, array $pivot = []): void
 	{
 		$this->pivot->newQuery()
 			->where([
@@ -227,11 +236,22 @@ class ManyToMorph extends Relation
 			->delete();
 	}
 
-	/**
-	 * @todo ability to configure collection class.
-	 */
-	protected function newCollection(array $models = []): Collection
+	protected function addTimestamps(array $values = []): array
 	{
-		return new Collection($models);
+		if (! $this->pivot->usesTimestamps()) {
+			return $values;
+		}
+
+		$timestamp = $this->pivot->freshTimestampString();
+
+		if (! is_null($this->pivot->getUpdatedAtColumn())) {
+			$values = array_merge([$this->pivot->getUpdatedAtColumn() => $timestamp], $values);
+		}
+
+		if (! is_null($this->pivot->getCreatedAtColumn())) {
+			$values = array_merge([$this->pivot->getCreatedAtColumn() => $timestamp], $values);
+		}
+
+		return $values;
 	}
 }

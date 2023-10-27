@@ -60,7 +60,6 @@ class ManyToMorphTest extends TestCase
 	 */
 	public function it_attaches_belongs_to_any_models(): void
 	{
-		/** @var Page $page */
 		$page = Page::create();
 
 		$heroSection = HeroSection::create([
@@ -82,7 +81,6 @@ class ManyToMorphTest extends TestCase
 	 */
 	public function it_attaches_belongs_to_any_models_with_pivot_attributes(): void
 	{
-		/** @var Page $page */
 		$page = Page::create();
 
 		$heroSection = HeroSection::create([
@@ -92,6 +90,8 @@ class ManyToMorphTest extends TestCase
 		$page->components()->attach($heroSection, [
 			'position' => 1337,
 		]);
+
+		// die(var_dump($page->components()->pivot->usesTimestamps()));
 
 		$pageComponents = Capsule::table('page_components')->get();
 
@@ -107,7 +107,6 @@ class ManyToMorphTest extends TestCase
 	 */
 	public function it_updates_pivot_attributes(): void
 	{
-		/** @var Page $page */
 		$page = Page::create();
 
 		$heroSection = HeroSection::create([
@@ -132,7 +131,6 @@ class ManyToMorphTest extends TestCase
 	 */
 	public function it_detaches_belongs_to_any_models(): void
 	{
-		/** @var Page $page */
 		$page = Page::create();
 
 		$heroSection = HeroSection::create([
@@ -151,7 +149,6 @@ class ManyToMorphTest extends TestCase
 	 */
     public function it_gets_belongs_to_any_models(): void
     {
-        /** @var Page $page */
         $page = Page::create();
 
         $page->components()->attach(
@@ -185,7 +182,6 @@ class ManyToMorphTest extends TestCase
 	 */
 	public function it_sorts_models_by_pivot_attribute(): void
 	{
-		/** @var Page $page */
 		$page = Page::create();
 
 		$page->components()->attach(
@@ -222,7 +218,6 @@ class ManyToMorphTest extends TestCase
 	 */
 	public function it_eager_loads_belongs_to_any_models(): void
 	{
-		/** @var Page $page */
 		$page = Page::create();
 
 		$page->components()->attach(
@@ -243,10 +238,8 @@ class ManyToMorphTest extends TestCase
 	 */
 	public function it_eager_loads_belongs_to_any_nested_models(): void
 	{
-		/** @var Page $page */
 		$page = Page::create();
 
-		/** @var FaqSection $faqSection */
 		$faqSection = FaqSection::create([
 			'heading' => 'FAQ Section'
 		]);
