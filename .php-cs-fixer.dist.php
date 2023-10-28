@@ -18,4 +18,8 @@ return (new PhpCsFixer\Config())
 	])
 	->setIndent("\t")
 	->setRiskyAllowed(true)
-	->setCacheFile(__DIR__.'/.cache/.php-cs-fixer.cache');
+	->setCacheFile(
+		is_dir(__DIR__.'/.cache')
+			? __DIR__.'/.cache/.php-cs-fixer.cache'
+			: __DIR__.'/.php-cs-fixer.cache'
+	);
