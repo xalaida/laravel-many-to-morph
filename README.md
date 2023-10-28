@@ -19,7 +19,7 @@ However, when dealing with this type of relationship, you might encounter certai
 1. When you have numerous related models, you need to define a separate relation for each type of model.
 2. It is hard to retrieve all related models at once.
 
-This package introduces a new Many-To-Morph relationship, inspired by the [Directus Many-to-Any relation](https://docs.directus.io/app/data-model/relationships.html#many-to-any-m2a) that handles these problems.
+This package introduces a new Many-To-Morph relationship, inspired by the Directus's [Many-to-Any relation](https://docs.directus.io/app/data-model/relationships.html#many-to-any-m2a) that handles these problems.
 
 ## Table of Contents
 
