@@ -74,7 +74,7 @@ $tag = Tag::find(1);
 foreach ($tag->taggables as $taggable) {
     if ($taggable instanceof Post) {
         // ...
-	} else if ($taggable instanceof Video) {
+    } else if ($taggable instanceof Video) {
         // ...
     }
 }
