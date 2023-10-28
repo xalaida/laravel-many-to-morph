@@ -1,0 +1,23 @@
+name: PHP CS Fixer
+
+on:
+    - push
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        container:
+            image: php:7.4-cli-alpine
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Install Composer
+              run: curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+            - name: Install Composer dependencies
+              run: composer install --no-interaction --no-progress
+
+            - name: Run PHP CS Fixer
+              run: vendor/bin/php-cs-fixer fix --dry-run
