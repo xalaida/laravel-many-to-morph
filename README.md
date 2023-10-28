@@ -19,7 +19,7 @@ While it works well for most use cases, you might encounter certain challenges t
 
 This package introduces a new Many-To-Morph relationship, inspired by the Directus's [Many-to-Any relation](https://docs.directus.io/app/data-model/relationships.html#many-to-any-m2a) that handles these problems.
 
-## Table of Contents
+## 📝 Table of Contents
 
 - [Installation](#-installation)
 - [Documentation](#-documentation)
@@ -74,7 +74,7 @@ $tag = Tag::find(1);
 foreach ($tag->taggables as $taggable) {
     if ($taggable instanceof Post) {
         // ...
-	} else if ($taggable instanceof Video) {
+    } else if ($taggable instanceof Video) {
         // ...
     }
 }
@@ -105,7 +105,7 @@ $tags = Tag::query()
     ->with(['taggables' => function (ManyToMorph $taggables) {
         $taggables->morphWith([
             Post::class => ['media'],
-            Video::class => ['thumbnails'],
+            Video::class => ['previews'],
         ]);
     }])
     ->get();
