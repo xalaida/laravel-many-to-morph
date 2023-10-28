@@ -105,7 +105,7 @@ $tags = Tag::query()
     ->with(['taggables' => function (ManyToMorph $taggables) {
         $taggables->morphWith([
             Post::class => ['media'],
-            Video::class => ['previews'],
+            Video::class => ['thumbnails'],
         ]);
     }])
     ->get();
