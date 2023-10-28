@@ -54,7 +54,7 @@ coverage: phpunit.coverage.text
 
 # Run PHP Coding Standards Fixer
 php-cs-fixer:
-	docker compose run --rm php-cs-fixer
+	docker compose run --rm php-cs-fixer fix
 
 # Remove installation files
 uninstall: down composer.uninstall cache.clear
