@@ -10,11 +10,9 @@ A package that simplifies and enhances Many-To-Many polymorphic relationships in
 [![License](https://img.shields.io/github/license/nevadskiy/laravel-many-to-morph)](https://packagist.org/packages/nevadskiy/laravel-many-to-morph)
 
 ## Introduction
-
-Laravel's Eloquent ORM offers powerful tools for managing relationships between data models in your application. 
-One common type of relationship is the [Many-To-Many polymorphic relation](https://laravel.com/docs/10.x/eloquent-relationships#many-to-many-polymorphic-relations), 
-which allows you to associate multiple models with one another in a flexible manner. 
-However, when dealing with this type of relationship, you might encounter certain challenges that require more elegant solutions:
+ 
+One common type of relationship in Laravel's Eloquent ORM is the [Many-To-Many polymorphic relation](https://laravel.com/docs/10.x/eloquent-relationships#many-to-many-polymorphic-relations).
+While it works well for most use cases, you might encounter certain challenges that require more elegant solutions:
 
 1. When you have numerous related models, you need to define a separate relation for each type of model.
 2. It is hard to retrieve all related models at once.
