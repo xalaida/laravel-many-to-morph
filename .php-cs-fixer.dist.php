@@ -12,6 +12,7 @@ return (new PhpCsFixer\Config())
 			'import_functions' => true,
 		],
 		'no_unused_imports' => true,
+		'not_operator_with_successor_space' => true,
 		'php_unit_test_annotation' => [
 			'style' => 'annotation',
 		],
