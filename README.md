@@ -23,12 +23,12 @@ This package introduces a new Many-To-Morph relationship, inspired by the Direct
 
 - [Installation](#-installation)
 - [Documentation](#-documentation)
-	- [Configuring Relationship](#configuring-relationship)
-	- [Retrieving Relationships](#retrieving-relationships)
-	- [Ordering Relationships](#ordering-relationships)
-	- [Eager Loading Relationships](#eager-loading-relationships)
-	- [Attaching Relationships](#attaching-relationships)
-	- [Detaching Relationships](#detaching-relationships)
+    - [Configuring Relationship](#configuring-relationship)
+    - [Retrieving Relationships](#retrieving-relationships)
+    - [Ordering Relationships](#ordering-relationships)
+    - [Eager Loading Relationships](#eager-loading-relationships)
+    - [Attaching Relationships](#attaching-relationships)
+    - [Detaching Relationships](#detaching-relationships)
 - [License](#-license)
 
 ## 🔌 Installation
@@ -51,7 +51,7 @@ use Nevadskiy\ManyToMorph\ManyToMorph;
 
 class Tag extends Model
 {
-	use HasManyToMorph;
+    use HasManyToMorph;
 
     public function taggables(): ManyToMorph
     {
@@ -72,10 +72,10 @@ use App\Models\Video;
 $tag = Tag::find(1);
 
 foreach ($tag->taggables as $taggable) {
-	if ($taggable instanceof Post) {
-		// ...
+    if ($taggable instanceof Post) {
+        // ...
 	} else if ($taggable instanceof Video) {
-		// ...
+        // ...
 	}
 }
 ```
@@ -103,12 +103,12 @@ use App\Models\Video;
 
 $tags = Tag::query()
 	->with(['taggables' => function (ManyToMorph $taggables) {
-		$taggables->morphWith([
-			Post::class => ['media'],
-			Video::class => ['previews'],
-		]);
-	}])
-	->get();
+        $taggables->morphWith([
+            Post::class => ['media'],
+            Video::class => ['previews'],
+        ]);
+    }])
+    ->get();
 ```
 
 ### Attaching Relationships
