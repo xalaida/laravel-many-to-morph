@@ -1,0 +1,32 @@
+{
+    "name": "nevadskiy/laravel-many-to-morph",
+    "description": "The missing polymorphic relationship for Eloquent.",
+    "keywords": [
+        "many-to-morph",
+        "many-to-any",
+        "relation",
+        "laravel",
+        "eloquent"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^7.4 || ^8.0.2",
+        "illuminate/database": "^8.0 || ^9.0 || ^10.0"
+    },
+    "require-dev": {
+		"phpunit/phpunit": "^9.6",
+        "friendsofphp/php-cs-fixer": "^2.19 || ^3.0"
+	},
+	"autoload": {
+        "psr-4": {
+            "Nevadskiy\\ManyToMorph\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Nevadskiy\\ManyToMorph\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+    composer:
+        image: composer:latest
+        environment:
+            COMPOSER_CACHE_DIR: /app/.cache/composer
+            COMPOSER_PREFER_STABLE: 1
+        volumes:
+            - ./:/app
+        working_dir: /app
+
+    phpunit:
+        image: php:7.4-cli-alpine
+        volumes:
+            - ./:/app
+        working_dir: /app
+        entrypoint: vendor/bin/phpunit
+
+    php-cs-fixer:
+        image: php:7.4-cli-alpine
+        volumes:
+            - ./:/app
+        working_dir: /app
+        entrypoint: vendor/bin/php-cs-fixer
