@@ -11,27 +11,27 @@ use Nevadskiy\ManyToMorph\ManyToMorph;
 
 class CustomCollectionTest extends TestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
+	protected function setUp(): void
+	{
+		parent::setUp();
 
-        Capsule::schema()->create('tags', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
-
-        Capsule::schema()->create('taggables', function (Blueprint $table) {
+		Capsule::schema()->create('tags', function (Blueprint $table) {
 			$table->id();
-            $table->foreignId('tag_id')->constrained('pages');
-            $table->morphs('taggable');
-        });
+			$table->timestamps();
+		});
 
-        Capsule::schema()->create('posts', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->timestamps();
-        });
-    }
+		Capsule::schema()->create('taggables', function (Blueprint $table) {
+			$table->id();
+			$table->foreignId('tag_id')->constrained('pages');
+			$table->morphs('taggable');
+		});
+
+		Capsule::schema()->create('posts', function (Blueprint $table) {
+			$table->id();
+			$table->string('name');
+			$table->timestamps();
+		});
+	}
 
 	/**
 	 * @test
@@ -51,27 +51,27 @@ class CustomCollectionTest extends TestCase
 		static::assertInstanceOf(PostForCustomCollection::class, $tag->taggables[0]);
 	}
 
-    protected function tearDown(): void
-    {
+	protected function tearDown(): void
+	{
 		Capsule::schema()->drop('posts');
-        Capsule::schema()->drop('taggables');
+		Capsule::schema()->drop('taggables');
 		Capsule::schema()->drop('tags');
 
-        parent::tearDown();
-    }
+		parent::tearDown();
+	}
 }
 
 class TagForCustomCollection extends Model
 {
-    use HasManyToMorph;
+	use HasManyToMorph;
 
 	protected $table = 'tags';
 
-    public function taggables(): ManyToMorph
-    {
-        return $this->manyToMorph('taggable', 'taggables', 'taggable_type', 'taggable_id', 'tag_id')
+	public function taggables(): ManyToMorph
+	{
+		return $this->manyToMorph('taggable', 'taggables', 'taggable_type', 'taggable_id', 'tag_id')
 			->collectUsing(CustomCollection::class);
-    }
+	}
 }
 
 class PostForCustomCollection extends Model

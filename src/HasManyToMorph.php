@@ -18,8 +18,7 @@ trait HasManyToMorph
 		string $morphKeyColumn = null,
 		string $foreignKeyColumn = null,
 		string $parentKeyColumn = null
-	): ManyToMorph
-	{
+	): ManyToMorph {
 		$table = $table ?? Str::plural($morphName);
 
 		$morphTypeColumn = $morphTypeColumn ?? "{$morphName}_type";
@@ -39,10 +38,9 @@ trait HasManyToMorph
 		string $morphKeyColumn,
 		string $foreignKeyColumn,
 		string $parentKeyColumn
-	): ManyToMorph
-	{
+	): ManyToMorph {
 		if (is_subclass_of($table, Model::class)) {
-			$pivot = new $table;
+			$pivot = new $table();
 		} else {
 			$pivot = new MorphPivot();
 

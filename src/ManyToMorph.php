@@ -152,7 +152,7 @@ class ManyToMorph extends Relation
 	{
 		$class = Model::getActualClassNameForMorph($morphType);
 
-		return tap(new $class, function ($instance) {
+		return tap(new $class(), function ($instance) {
 			if (! $instance->getConnectionName()) {
 				$instance->setConnection($this->getConnection()->getName());
 			}
@@ -199,7 +199,8 @@ class ManyToMorph extends Relation
 
 			if (isset($dictionary[$dictionaryKey])) {
 				$model->setRelation(
-					$relation, $this->newCollection($dictionary[$dictionaryKey])
+					$relation,
+					$this->newCollection($dictionary[$dictionaryKey])
 				);
 			}
 		}

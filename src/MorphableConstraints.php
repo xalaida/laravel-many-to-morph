@@ -18,7 +18,8 @@ trait MorphableConstraints
 	public function morphWith(array $with): self
 	{
 		$this->morphableEagerLoads = array_merge(
-			$this->morphableEagerLoads, $with
+			$this->morphableEagerLoads,
+			$with
 		);
 
 		return $this;
@@ -27,7 +28,8 @@ trait MorphableConstraints
 	public function morphWithCount(array $withCount): self
 	{
 		$this->morphableEagerLoadCounts = array_merge(
-			$this->morphableEagerLoadCounts, $withCount
+			$this->morphableEagerLoadCounts,
+			$withCount
 		);
 
 		return $this;
@@ -36,7 +38,8 @@ trait MorphableConstraints
 	public function constrain(array $callbacks): self
 	{
 		$this->morphableConstraints = array_merge(
-			$this->morphableConstraints, $callbacks
+			$this->morphableConstraints,
+			$callbacks
 		);
 
 		return $this;

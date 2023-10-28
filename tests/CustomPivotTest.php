@@ -11,29 +11,29 @@ use Nevadskiy\ManyToMorph\ManyToMorph;
 
 class CustomPivotTest extends TestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
+	protected function setUp(): void
+	{
+		parent::setUp();
 
-        Capsule::schema()->create('tags', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
-
-        Capsule::schema()->create('taggables', function (Blueprint $table) {
+		Capsule::schema()->create('tags', function (Blueprint $table) {
 			$table->id();
-            $table->foreignId('tag_id')->constrained('pages');
-            $table->morphs('taggable');
-            $table->integer('score')->unsigned()->default(0);
 			$table->timestamps();
-        });
+		});
 
-        Capsule::schema()->create('posts', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->timestamps();
-        });
-    }
+		Capsule::schema()->create('taggables', function (Blueprint $table) {
+			$table->id();
+			$table->foreignId('tag_id')->constrained('pages');
+			$table->morphs('taggable');
+			$table->integer('score')->unsigned()->default(0);
+			$table->timestamps();
+		});
+
+		Capsule::schema()->create('posts', function (Blueprint $table) {
+			$table->id();
+			$table->string('name');
+			$table->timestamps();
+		});
+	}
 
 	/**
 	 * @test
@@ -58,26 +58,26 @@ class CustomPivotTest extends TestCase
 		static::assertEquals($now, $tag->taggables[0]->pivot->created_at);
 	}
 
-    protected function tearDown(): void
-    {
+	protected function tearDown(): void
+	{
 		Capsule::schema()->drop('posts');
-        Capsule::schema()->drop('taggables');
+		Capsule::schema()->drop('taggables');
 		Capsule::schema()->drop('tags');
 
-        parent::tearDown();
-    }
+		parent::tearDown();
+	}
 }
 
 class TagForCustomPivot extends Model
 {
-    use HasManyToMorph;
+	use HasManyToMorph;
 
 	protected $table = 'tags';
 
-    public function taggables(): ManyToMorph
-    {
+	public function taggables(): ManyToMorph
+	{
 		return $this->manyToMorph('taggable', TaggableForCustomPivot::class, 'taggable_type', 'taggable_id', 'tag_id');
-    }
+	}
 }
 
 class TaggableForCustomPivot extends Model

@@ -13,38 +13,38 @@ use Nevadskiy\ManyToMorph\ManyToMorph;
 
 class ManyToMorphTest extends TestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
+	protected function setUp(): void
+	{
+		parent::setUp();
 
-        Capsule::schema()->create('pages', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+		Capsule::schema()->create('pages', function (Blueprint $table) {
+			$table->id();
+			$table->timestamps();
+		});
 
-        Capsule::schema()->create('page_components', function (Blueprint $table) {
-            $table->foreignId('page_id')->constrained('pages');
-            $table->morphs('page_component');
-            $table->integer('position')->unsigned()->default(0);
-        });
+		Capsule::schema()->create('page_components', function (Blueprint $table) {
+			$table->foreignId('page_id')->constrained('pages');
+			$table->morphs('page_component');
+			$table->integer('position')->unsigned()->default(0);
+		});
 
-        Capsule::schema()->create('hero_sections', function (Blueprint $table) {
-            $table->id();
-            $table->string('heading');
-            $table->timestamps();
-        });
+		Capsule::schema()->create('hero_sections', function (Blueprint $table) {
+			$table->id();
+			$table->string('heading');
+			$table->timestamps();
+		});
 
-        Capsule::schema()->create('demo_sections', function (Blueprint $table) {
-            $table->id();
-            $table->string('heading');
-            $table->timestamps();
-        });
+		Capsule::schema()->create('demo_sections', function (Blueprint $table) {
+			$table->id();
+			$table->string('heading');
+			$table->timestamps();
+		});
 
-        Capsule::schema()->create('faq_sections', function (Blueprint $table) {
-            $table->id();
-            $table->string('heading');
-            $table->timestamps();
-        });
+		Capsule::schema()->create('faq_sections', function (Blueprint $table) {
+			$table->id();
+			$table->string('heading');
+			$table->timestamps();
+		});
 
 		Capsule::schema()->create('faq_section_items', function (Blueprint $table) {
 			$table->id();
@@ -53,7 +53,7 @@ class ManyToMorphTest extends TestCase
 			$table->string('answer');
 			$table->timestamps();
 		});
-    }
+	}
 
 	/**
 	 * @test
@@ -145,35 +145,35 @@ class ManyToMorphTest extends TestCase
 	/**
 	 * @test
 	 */
-    public function it_gets_belongs_to_any_models(): void
-    {
-        $page = Page::create();
+	public function it_gets_belongs_to_any_models(): void
+	{
+		$page = Page::create();
 
-        $page->components()->attach(
-            $heroSection = HeroSection::create([
-                'heading' => 'Hero Section'
-            ])
-        );
+		$page->components()->attach(
+			$heroSection = HeroSection::create([
+				'heading' => 'Hero Section'
+			])
+		);
 
-        $page->components()->attach(
-            $demoSection = DemoSection::create([
-                'heading' => 'Demo Section'
-            ])
-        );
+		$page->components()->attach(
+			$demoSection = DemoSection::create([
+				'heading' => 'Demo Section'
+			])
+		);
 
-        $page->components()->attach(
-            $faqSection = FaqSection::create([
-                'heading' => 'FAQ Section'
-            ])
-        );
+		$page->components()->attach(
+			$faqSection = FaqSection::create([
+				'heading' => 'FAQ Section'
+			])
+		);
 
-        $components = $page->components()->get();
+		$components = $page->components()->get();
 
-        static::assertCount(3, $components);
-        static::assertTrue($components[0]->is($heroSection));
-        static::assertTrue($components[1]->is($demoSection));
-        static::assertTrue($components[2]->is($faqSection));
-    }
+		static::assertCount(3, $components);
+		static::assertTrue($components[0]->is($heroSection));
+		static::assertTrue($components[1]->is($demoSection));
+		static::assertTrue($components[2]->is($faqSection));
+	}
 
 	/**
 	 * @test
@@ -297,43 +297,43 @@ class ManyToMorphTest extends TestCase
 		static::assertEquals($heroSection->getMorphClass(), $components[0]->morphPivot->page_component_type);
 	}
 
-    protected function tearDown(): void
-    {
+	protected function tearDown(): void
+	{
 		Capsule::schema()->drop('faq_section_items');
 		Capsule::schema()->drop('faq_sections');
 		Capsule::schema()->drop('demo_sections');
 		Capsule::schema()->drop('hero_sections');
-        Capsule::schema()->drop('page_components');
+		Capsule::schema()->drop('page_components');
 		Capsule::schema()->drop('pages');
 
-        parent::tearDown();
-    }
+		parent::tearDown();
+	}
 }
 
 class Page extends Model
 {
-    use HasManyToMorph;
+	use HasManyToMorph;
 
-    public function components(): ManyToMorph
-    {
-        return $this->manyToMorph('page_component');
-    }
+	public function components(): ManyToMorph
+	{
+		return $this->manyToMorph('page_component');
+	}
 }
 
 class HeroSection extends Model
 {
-    public function pages(): MorphToMany
-    {
-        return $this->morphToMany(Page::class, 'page_component');
-    }
+	public function pages(): MorphToMany
+	{
+		return $this->morphToMany(Page::class, 'page_component');
+	}
 }
 
 class DemoSection extends Model
 {
-    public function pages(): MorphToMany
-    {
-        return $this->morphToMany(Page::class, 'page_component');
-    }
+	public function pages(): MorphToMany
+	{
+		return $this->morphToMany(Page::class, 'page_component');
+	}
 }
 
 class FaqSection extends Model
@@ -343,10 +343,10 @@ class FaqSection extends Model
 		return $this->hasMany(FaqSectionItem::class);
 	}
 
-    public function pages(): MorphToMany
-    {
-        return $this->morphToMany(Page::class, 'page_component');
-    }
+	public function pages(): MorphToMany
+	{
+		return $this->morphToMany(Page::class, 'page_component');
+	}
 }
 
 class FaqSectionItem extends Model
