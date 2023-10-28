@@ -9,7 +9,7 @@ A package that simplifies and enhances Many-To-Many polymorphic relationships in
 [![Latest Stable Version](https://img.shields.io/packagist/v/nevadskiy/laravel-many-to-morph)](https://packagist.org/packages/nevadskiy/laravel-many-to-morph)
 [![License](https://img.shields.io/github/license/nevadskiy/laravel-many-to-morph)](https://packagist.org/packages/nevadskiy/laravel-many-to-morph)
 
-## Introduction
+## 📚 Introduction
  
 One common type of relationship in Laravel's Eloquent ORM is the [Many-To-Many polymorphic relation](https://laravel.com/docs/10.x/eloquent-relationships#many-to-many-polymorphic-relations).
 While it works well for most use cases, you might encounter certain challenges that require more elegant solutions, for example:
