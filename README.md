@@ -12,7 +12,7 @@ A package that simplifies and enhances Many-To-Many polymorphic relationships in
 ## Introduction
  
 One common type of relationship in Laravel's Eloquent ORM is the [Many-To-Many polymorphic relation](https://laravel.com/docs/10.x/eloquent-relationships#many-to-many-polymorphic-relations).
-While it works well for most use cases, you might encounter certain challenges that require more elegant solutions:
+While it works well for most use cases, you might encounter certain challenges that require more elegant solutions, for example:
 
 1. When you have numerous related models, you need to define a separate relation for each type of model.
 2. It is hard to retrieve all related models at once.
