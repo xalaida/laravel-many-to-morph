@@ -16,3 +16,10 @@ services:
             - ./:/app
         working_dir: /app
         entrypoint: vendor/bin/phpunit
+
+    php-cs-fixer:
+        image: php:7.4-cli-alpine
+        volumes:
+            - ./:/app
+        working_dir: /app
+        entrypoint: vendor/bin/php-cs-fixer
