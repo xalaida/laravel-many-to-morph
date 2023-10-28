@@ -76,7 +76,7 @@ foreach ($tag->taggables as $taggable) {
         // ...
 	} else if ($taggable instanceof Video) {
         // ...
-	}
+    }
 }
 ```
 
@@ -102,7 +102,7 @@ use App\Models\Post;
 use App\Models\Video;
 
 $tags = Tag::query()
-	->with(['taggables' => function (ManyToMorph $taggables) {
+    ->with(['taggables' => function (ManyToMorph $taggables) {
         $taggables->morphWith([
             Post::class => ['media'],
             Video::class => ['previews'],
