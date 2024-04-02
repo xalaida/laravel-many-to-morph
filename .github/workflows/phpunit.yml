@@ -25,22 +25,25 @@ jobs:
 
                 exclude:
                     - image: php:7.4-cli-alpine
-                      dependencies: laravel/framework:^9.0
+                      dependencies: laravel/framework:^9
 
                     - image: php:7.4-cli-alpine
-                      dependencies: laravel/framework:^10.0
+                      dependencies: laravel/framework:^10
+
+                    - image: php:7.4-cli-alpine
+                      dependencies: laravel/framework:^11
 
                     - image: php:8.0-cli-alpine
-                      dependencies: laravel/framework:^10.0
+                      dependencies: laravel/framework:^10
 
                     - image: php:8.1-cli-alpine
-                      dependencies: laravel/framework:^8.0
+                      dependencies: laravel/framework:^8
 
                     - image: php:8.2-cli-alpine
-                      dependencies: laravel/framework:^8.0
+                      dependencies: laravel/framework:^8
 
                     - image: php:8.2-cli-alpine
-                      dependencies: laravel/framework:^9.0
+                      dependencies: laravel/framework:^9
 
                 include:
                     - image: php:8.1-cli-alpine
