@@ -12,6 +12,7 @@ jobs:
                     - php:8.0-cli-alpine
                     - php:8.1-cli-alpine
                     - php:8.2-cli-alpine
+                    - php:8.3-cli-alpine
 
                 dependencies:
                     - laravel/framework:^8
@@ -51,6 +52,11 @@ jobs:
                     - image: php:8.2-cli-alpine
                       dependencies: laravel/framework:^9
 
+                    - image: php:8.3-cli-alpine
+                      dependencies: laravel/framework:^8
+
+                    - image: php:8.3-cli-alpine
+                      dependencies: laravel/framework:^9
                 include:
                     - image: php:8.1-cli-alpine
                       dependencies: laravel/framework:^8.65
@@ -67,7 +73,7 @@ jobs:
 
         steps:
             - name: Checkout code
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
 
             - name: Install Composer
               run: curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
